@@ -302,6 +302,7 @@ final class WooCommerce {
 		include_once( WC_ABSPATH . 'includes/class-wc-customer.php' );                       // Customer class
 		include_once( WC_ABSPATH . 'includes/class-wc-shortcodes.php' );                     // Shortcodes class
 		include_once( WC_ABSPATH . 'includes/class-wc-embed.php' );                          // Embeds
+		include_once( WC_ABSPATH . 'includes/class-wc-payment-request-api.php' );
 	}
 
 	/**
