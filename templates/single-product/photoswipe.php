@@ -19,10 +19,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-
-if ( ! is_product() ) {
-	return;
-}
 ?>
 
 <!-- Root element of PhotoSwipe. Must have class pswp. -->

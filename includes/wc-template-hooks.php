@@ -195,7 +195,7 @@ add_filter( 'woocommerce_product_tabs', 'woocommerce_sort_product_tabs', 99 );
 /**
  * Photoswipe.
  */
-add_action( 'wp_footer', 'woocommerce_photoswipe' );
+add_action( 'woocommerce_after_single_product', 'woocommerce_photoswipe' );
 
 /**
  * Checkout.

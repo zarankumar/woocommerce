@@ -2443,7 +2443,7 @@ if ( ! function_exists( 'wc_display_item_downloads' ) ) {
 if ( ! function_exists( 'woocommerce_photoswipe' ) ) {
 
 	/**
-	 * Get the shop sidebar template.
+	 * Get the photoswipe template.
 	 *
 	 */
 	function woocommerce_photoswipe() {
