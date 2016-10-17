@@ -142,8 +142,8 @@ jQuery( function( $ ) {
 		/**
 		 * Get product gallery image items.
 		 */
-		get_gallery_items: function() {
-			var $slides = $( '.woocommerce-product-gallery__wrapper' ).children(),
+		get_gallery_items: function( gallery ) {
+			var $slides = $( gallery ).find( '.woocommerce-product-gallery__wrapper' ).children(),
 				items   = [],
 				index   = $slides.filter( '.' + 'flex-active-slide' ).index();
 
@@ -180,10 +180,11 @@ jQuery( function( $ ) {
 		 * Initialise photoswipe.
 		 */
 		trigger_photoswipe: function() {
+			var gallery     = $( this ).closest( '.woocommerce-product-gallery' );
 			var pswpElement = $( '.pswp' )[0];
 
 			// Build items array.
-			var items = wc_product_gallery.get_gallery_items();
+			var items = wc_product_gallery.get_gallery_items( gallery );
 
 			// Define options.
 			var options = {
