@@ -28,6 +28,14 @@ abstract class WC_Data {
 	protected $data = array();
 
 	/**
+	 * Extra data for this object. Name value pairs (name + default value).
+	 * Used for sub classes (like product types) to add additional information
+	 * to an inherited class.
+	 * @var array
+	 */
+	protected $extra_data = array();
+
+	/**
 	 * Core data changes for this object.
 	 * @var array
 	 */
@@ -38,14 +46,6 @@ abstract class WC_Data {
 	 * @var bool
 	 */
 	protected $object_read = false;
-
-	/**
-	 * Extra data for this object. Name value pairs (name + default value).
-	 * Used as a standard way for sub classes (like product types) to add
-	 * additional information to an inherited class.
-	 * @var array
-	 */
-	protected $extra_data = array();
 
 	/**
 	 * Set to _data on construct so we can track and reset data if needed.
@@ -62,6 +62,7 @@ abstract class WC_Data {
 	/**
 	 * Stores meta in cache for future reads.
 	 * A group must be set to to enable caching.
+	 * @todo totally remove from WC_Data after all classes switch to factories.
 	 * @var string
 	 */
 	protected $cache_group = '';
@@ -108,6 +109,7 @@ abstract class WC_Data {
 	public function get_id() {
 		return $this->id;
 	}
+
 
 	/**
 	 * Updates object data in the database.
@@ -329,6 +331,7 @@ abstract class WC_Data {
 
 	/**
 	 * Read Meta Data from the database. Ignore any internal properties.
+	 * @todo totally remove from WC_Data after all classes switch to factories.
 	 * @since 2.6.0
 	 */
 	public function read_meta_data() {
@@ -401,6 +404,7 @@ abstract class WC_Data {
 
 	/**
 	 * Table structure is slightly different between meta types, this function will return what we need to know.
+	 * @todo totally remove from WC_Data after all classes switch to factories.
 	 * @since 2.6.0
 	 * @return array Array elements: table, object_id_field, meta_id_field
 	 */

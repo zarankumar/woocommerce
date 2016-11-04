@@ -29,6 +29,7 @@ class WC_Data_Store {
 	 */
 	private $stores = array(
 		'coupon' => 'WC_Coupon_Data_Store_CPT',
+		'product' => 'WC_Product_Data_Store_Posts',
 	);
 	/**
 	 * Contains the name of the current data store's class name.
@@ -143,5 +144,4 @@ class WC_Data_Store {
 			return call_user_func_array( array( $this->instance, $method ), array_merge( array( &$object ), $parameters ) );
 		}
 	}
-
 }

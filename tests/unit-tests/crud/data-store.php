@@ -52,7 +52,7 @@ class WC_Tests_Data_Store extends WC_Unit_Test_Case {
 	}
 
 	/**
-	 * Test to see if `first_second ``-> returns to `first` if unregistered.
+	 * Test to see if product_simple -> returns to product if unregistered.
 	 *
 	 * @since 2.7.0
 	 */
@@ -91,7 +91,10 @@ class WC_Tests_Data_Store extends WC_Unit_Test_Case {
 	 */
 	function set_dummy_store( $store ) {
 		return 'WC_Dummy_Data_Store_Custom_Table';
+		$product_store = WC_Data_Store::load( 'product_simple' );
+		$this->assertEquals( 'WC_Product_Data_Store_Posts', $product_store->get_current_class_name() );
 	}
+
 
 	/**
 	 * Helper function/filter to swap out the 'dummy' store for the default one.
