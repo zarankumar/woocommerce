@@ -1225,17 +1225,6 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 		$this->set_prop( 'image_id', $image_id );
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| CRUD methods
-	|--------------------------------------------------------------------------
-	|
-	| Methods which create, read, update and delete products from the database.
-	|
-	| A save method is included for convenience (chooses update or create based
-	| on if the order exists yet).
-	*/
-
 	/**
 	 * Get term ids from either a list of names, ids, or terms.
 	 *
