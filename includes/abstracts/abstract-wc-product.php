@@ -140,9 +140,6 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 		} elseif ( ! empty( $product->ID ) ) {
 			$this->set_id( absint( $product->ID ) );
 		}
-
-		$data_store = WC_Data_Store::load( 'product_' . $this->get_type() );
-		$data_store->read( $this );
 	}
 
 	/**
@@ -1262,63 +1259,6 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 			}
 		}
 		return $term_ids;
-	}
-
-	/**
-	 * Create a new product.
-	 *
-	 * @since 2.7.0
-	 */
-	public function create() {
-		$this->set_date_created( current_time( 'timestamp' ) );
-
-		$id = wp_insert_post( apply_filters( 'woocommerce_new_product_data', array(
-			'post_type'      => $this->post_type,
-			'post_status'    => $this->get_status() ? $this->get_status() : 'publish',
-			'post_author'    => get_current_user_id(),
-			'post_title'     => $this->get_name() ? $this->get_name() : __( 'Product', 'woocommerce' ),
-			'post_content'   => $this->get_description(),
-			'post_excerpt'   => $this->get_short_description(),
-			'post_parent'    => $this->get_parent_id(),
-			'comment_status' => $this->get_reviews_allowed() ? 'open' : 'closed',
-			'ping_status'    => 'closed',
-			'menu_order'     => $this->get_menu_order(),
-			'post_date'      => date( 'Y-m-d H:i:s', $this->get_date_created() ),
-			'post_date_gmt'  => get_gmt_from_date( date( 'Y-m-d H:i:s', $this->get_date_created() ) ),
-		) ), true );
-
-		if ( $id && ! is_wp_error( $id ) ) {
-			$this->set_id( $id );
-			$this->update_post_meta();
-			$this->update_terms();
-			$this->update_attributes();
-			$this->save_meta_data();
-			do_action( 'woocommerce_new_' . $this->post_type, $id );
-		}
-	}
-
-	/**
-	 * Updates an existing product.
-	 *
-	 * @since 2.7.0
-	 */
-	public function update() {
-		$post_data = array(
-			'ID'             => $this->get_id(),
-			'post_content'   => $this->get_description(),
-			'post_excerpt'   => $this->get_short_description(),
-			'post_title'     => $this->get_name(),
-			'post_parent'    => $this->get_parent_id(),
-			'comment_status' => $this->get_reviews_allowed() ? 'open' : 'closed',
-			'post_status'    => $this->get_status() ? $this->get_status() : 'publish',
-			'menu_order'     => $this->get_menu_order(),
-		);
-		wp_update_post( $post_data );
-		$this->update_post_meta();
-		$this->update_terms();
-		$this->update_attributes();
-		$this->save_meta_data();
-		do_action( 'woocommerce_update_' . $this->post_type, $this->get_id() );
 	}
 
 	/**
