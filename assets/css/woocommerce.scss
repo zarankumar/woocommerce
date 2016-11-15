@@ -2248,4 +2248,8 @@ body:not( .search-results ) {
 			}
 		}
 	}
+
+	span.onsale {
+		z-index: 5;
+	}
 }

@@ -2019,3 +2019,5 @@ body:not(.search-results) .twentysixteen .entry-summary {
   .twentyseventeen .woocommerce-pagination .next.page-numbers:before,
   .twentyseventeen .woocommerce-pagination .prev.page-numbers:before {
     display: none; }
+.twentyseventeen span.onsale {
+  z-index: 5; }
