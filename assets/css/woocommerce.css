@@ -2013,3 +2013,9 @@ body:not(.search-results) .twentysixteen .entry-summary {
   margin: 0; }
 .twentyseventeen .woocommerce-product-gallery ol li:before {
   display: none; }
+.twentyseventeen .woocommerce-pagination .next.page-numbers,
+.twentyseventeen .woocommerce-pagination .prev.page-numbers {
+  border-radius: 0; }
+  .twentyseventeen .woocommerce-pagination .next.page-numbers:before,
+  .twentyseventeen .woocommerce-pagination .prev.page-numbers:before {
+    display: none; }

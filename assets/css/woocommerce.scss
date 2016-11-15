@@ -2235,4 +2235,17 @@ body:not( .search-results ) {
 			}
 		}
 	}
+
+	.woocommerce-pagination {
+		.next,
+		.prev {
+			&.page-numbers {
+				border-radius: 0;
+
+				&:before {
+					display: none;
+				}
+			}
+		}
+	}
 }
