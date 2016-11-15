@@ -2217,3 +2217,14 @@ body:not( .search-results ) {
 		color: inherit;
 	}
 }
+
+/**
+ * Twenty Seventeen specific styles
+ */
+
+.twentyseventeen {
+	.woocommerce-product-gallery__wrapper,
+	.woocommerce-product-gallery__image {
+		margin: 0;
+	}
+}
