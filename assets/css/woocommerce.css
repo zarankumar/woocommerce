@@ -2011,3 +2011,5 @@ body:not(.search-results) .twentysixteen .entry-summary {
 .twentyseventeen .woocommerce-product-gallery__wrapper,
 .twentyseventeen .woocommerce-product-gallery__image {
   margin: 0; }
+.twentyseventeen .woocommerce-product-gallery ol li:before {
+  display: none; }

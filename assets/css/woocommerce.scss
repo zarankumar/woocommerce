@@ -2227,4 +2227,12 @@ body:not( .search-results ) {
 	.woocommerce-product-gallery__image {
 		margin: 0;
 	}
+
+	.woocommerce-product-gallery {
+		ol li {
+			&:before {
+				display: none;
+			}
+		}
+	}
 }
