@@ -1736,7 +1736,8 @@ button.pswp__button--zoom:hover {
         margin: -2px 0 0 0.5em;
         padding: 0;
         position: relative;
-        box-shadow: none; }
+        box-shadow: none;
+        max-width: 36px; }
       .woocommerce-cart #payment ul.payment_methods li img + img,
       .woocommerce-checkout #payment ul.payment_methods li img + img,
       #add_payment_method #payment ul.payment_methods li img + img {
