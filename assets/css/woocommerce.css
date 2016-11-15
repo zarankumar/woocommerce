@@ -1725,6 +1725,10 @@ button.pswp__button--zoom:hover {
       .woocommerce-checkout #payment ul.payment_methods li input,
       #add_payment_method #payment ul.payment_methods li input {
         margin: 0 1em 0 0; }
+      .woocommerce-cart #payment ul.payment_methods li label,
+      .woocommerce-checkout #payment ul.payment_methods li label,
+      #add_payment_method #payment ul.payment_methods li label {
+        display: inline-block; }
       .woocommerce-cart #payment ul.payment_methods li img,
       .woocommerce-checkout #payment ul.payment_methods li img,
       #add_payment_method #payment ul.payment_methods li img {
