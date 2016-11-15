@@ -58,7 +58,10 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 								<?php echo wc_get_order_status_name( $order->get_status() ); ?>
 
 							<?php elseif ( 'order-total' === $column_id ) : ?>
-								<?php echo sprintf( _n( '%1$s for %2$s item', '%1$s for %2$s items', $item_count, 'woocommerce' ), $order->get_formatted_order_total(), $item_count ); ?>
+								<?php
+								/* translators: 1: formatted order total 2: total order items */
+								printf( _n( '%1$s for %2$s item', '%1$s for %2$s items', $item_count, 'woocommerce' ), $order->get_formatted_order_total(), $item_count );
+								?>
 
 							<?php elseif ( 'order-actions' === $column_id ) : ?>
 								<?php
@@ -116,7 +119,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 <?php else : ?>
 	<div class="woocommerce-Message woocommerce-Message--info woocommerce-info">
 		<a class="woocommerce-Button button" href="<?php echo esc_url( apply_filters( 'woocommerce_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ) ); ?>">
-			<?php _e( 'Go Shop', 'woocommerce' ) ?>
+			<?php _e( 'Go shop', 'woocommerce' ) ?>
 		</a>
 		<?php _e( 'No order has been made yet.', 'woocommerce' ); ?>
 	</div>

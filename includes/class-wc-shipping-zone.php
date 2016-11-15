@@ -45,7 +45,7 @@ class WC_Shipping_Zone extends WC_Data {
 			$this->set_zone_name( $zone->zone_name );
 			$this->set_zone_order( $zone->zone_order );
 			$this->read_zone_locations( $zone->zone_id );
-		} elseif ( 0 === $zone ) {
+		} elseif ( 0 === $zone || "0" === $zone ) {
 			$this->set_id( 0 );
 			$this->set_zone_name( __( 'Rest of the World', 'woocommerce' ) );
 			$this->read_zone_locations( 0 );
@@ -107,7 +107,7 @@ class WC_Shipping_Zone extends WC_Data {
 	 * Delete a zone.
 	 * @since 2.6.0
 	 */
-	public function delete() {
+	public function delete( $force_delete = false ) {
 		if ( $this->get_id() ) {
 			global $wpdb;
 			$wpdb->delete( $wpdb->prefix . 'woocommerce_shipping_zone_methods', array( 'zone_id' => $this->get_id() ) );
@@ -297,6 +297,8 @@ class WC_Shipping_Zone extends WC_Data {
 			}
 		}
 
+		uasort( $methods, 'wc_shipping_zone_method_order_uasort_comparison' );
+
 		return apply_filters( 'woocommerce_shipping_zone_shipping_methods', $methods, $raw_methods, $allowed_classes, $this );
 	}
 
@@ -455,7 +457,7 @@ class WC_Shipping_Zone extends WC_Data {
 		global $wpdb;
 
 		if ( null === $this->get_id() ) {
-			return 0;
+			$this->save();
 		}
 
 		$instance_id     = 0;

@@ -143,7 +143,9 @@ class WC_Admin_Assets {
 			$decimal = isset( $locale['decimal_point'] ) ? $locale['decimal_point'] : '.';
 
 			$params = array(
+				/* translators: %s: decimal */
 				'i18n_decimal_error'                => sprintf( __( 'Please enter in decimal (%s) format without thousand separators.', 'woocommerce' ), $decimal ),
+				/* translators: %s: price decimal separator */
 				'i18n_mon_decimal_error'            => sprintf( __( 'Please enter in monetary decimal (%s) format without thousand separators and currency symbols.', 'woocommerce' ), wc_get_price_decimal_separator() ),
 				'i18n_country_iso_error'            => __( 'Please enter in country code with two capital letters.', 'woocommerce' ),
 				'i18_sale_less_than_regular_error'  => __( 'Please enter in a value less than the regular price.', 'woocommerce' ),
@@ -338,9 +340,10 @@ class WC_Admin_Assets {
 			);
 		}
 
-		// System status
+		// System status.
 		if ( $wc_screen_id . '_page_wc-status' === $screen_id ) {
-			wp_enqueue_script( 'zeroclipboard' );
+			wp_register_script( 'wc-admin-system-status', WC()->plugin_url() . '/assets/js/admin/system-status' . $suffix . '.js', array( 'zeroclipboard' ), WC_VERSION );
+			wp_enqueue_script( 'wc-admin-system-status' );
 		}
 
 		if ( in_array( $screen_id, array( 'user-edit', 'profile' ) ) ) {

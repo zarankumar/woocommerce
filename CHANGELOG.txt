@@ -1,5 +1,77 @@
 == Changelog ==
 
+= 2.6.8 - 10/11/16 =
+* Fix - REQUEST_URI was missing a trailing slash when being compared in the cache prevention functions.
+* Fix - Prevent issues when sending empty prices to PayPal.
+* Fix - Invalid email check.
+* Tweak - New extensions screen.
+
+= 2.6.7 - 26/10/16 =
+* Fix - Use FLOOR and CEIL to get price filter values. Fixes the issue where max price is capped at 99.
+* Fix - Hide "Sales this month" information from Dashboard widget for users that don't have `view_woocommerce_reports` capability.
+* Fix - Remove notices only once on cart so subsequent notices do not remove older notices.
+* Tweak - Improve credit card fields for better mobile experience.
+
+= 2.6.6 - 20/10/16 =
+* Fix - Conflict with Local Pickup Plus extension due to 2.7.x code in has_shipping_method().
+* Fix - Shipping method display order on frontend.
+
+= 2.6.5 - 19/10/16 =
+* Fix - Shipping classes URL in admin.
+* Fix - Notice in reports when using custom date ranges.
+* Fix - When checking needs_shipping, ignore anything after : in the method ID.
+* Fix - Allow has_shipping_method to work with instances.
+* Fix - Potential notice in wc_add_to_cart_message().
+* Fix - Prevent notice in wpdb_table_fix if termmeta table is not used.
+* Fix - Payment method box fixes e.g. maintain previously selected payment method after update.
+* Fix - Prevent multiple password validation methods at once on my account page.
+* Fix - Ship to specific counties option had no effect.
+* Fix - Broken Webhook delivery due to use of post_date_gmt which does not exist for drafts.
+* Fix - Use method title in admin shipping dropdown.
+* Fix - Fixed downloadable variable product URL.
+* Fix - Handle object when generate_cart_id is used to prevent notices.
+* Fix - Set header link color in emails.
+* Fix - Rest of the world ID 0 zone handling when using CRUD classes.
+* Fix - Cast prices as decimal when querying prices in price filter widget.
+* Fix - API - Fix coupon description field.
+* Fix - API - ID needs to be capitalized to allow correct sorting.
+* Fix - API - Fixed undefined order ID.
+* Fix - API - Allow API to save refund reason.
+* Fix - API - Resolved encoding issues with attribute and variation slugs.
+* Fix - API - get_attributes should return term name, not slug.
+* Fix - API - Product "filter" and "sku" paramaters.
+* Fix - Handle info notices in cart, not just error messages.
+* Fix - Don't remove hyphens in attribute labels.
+* Fix - Start sales on variations after they are saved, if applicable.
+* Fix - Made the text showing max variations you can link match the actual filtered value.
+* Fix - Add missing tables to wpmu_drop_tables function.
+* Fix - When syncing variation stock, ensure post is a variation.
+* Fix - Resolved some sales by date sum issues.
+* Fix - Fix cart update in IE when enter key is pressed.
+* Fix - Variation is_on_backorder when parent manages stock.
+* Fix - Fix variation script malfunctioning when show_option_none arg is set to false.
+* Fix - Fire tokenisation event on load for pay page.
+* Fix - Populate attribute dropdown when empty.
+* Fix - Fix email check on my account page.
+* Fix - Send processing email on on-hold to processing transition.
+* Fix - Incompatibility with SQLite databases.
+* Fix - KGS and ISK currency symbols.
+* Tweak - Password reset now uses WP functions.
+* Tweak - Format US 9-digit postcodes.
+
+= 2.6.4 - 26/07/16 =
+* Fix - Security - Only allow image MIME type upload via REST APIs.
+* Fix - Shipping method title display in COD settings.
+* Fix - Order date input in Edge browser.
+* Fix - Ensure value is not null in variations to support empty show_option_none setting.
+* Fix - get_the_title does not need escape in grouped template file.
+* Fix - Ensure WC_ROUNDING_PRECISION is defined and use it as a low precision boundary in wc_get_rounding_precision().
+* Fix - Response body should be a string in webhook class.
+* Fix - Use h2 instead of h3 headings in profile screen.
+* Dev - API - Allow Allow meta_key/value filters for products.
+* Dev - CLI - Explode tags and category IDs to allow multiple comma separated values.
+* Dev - add $order arg to woocommerce_admin_order_item_class and woocommerce_admin_html_order_item_class filters.
+
 = 2.6.3 - 19/07/16 =
 * Fix - Security - Escape captions in product-thumbnail and product-image templates (template versions have been bumped).
 * Fix - Fixed how we calculate shipping tax rates when using more than one tax class.
@@ -249,7 +321,7 @@
 * Tweak - Revised email settings screens to show emails in a table and avoid a long sub-nav.
 * Tweak - Default customer role capabilities.
 * Tweak - Expire mini-cart cache after 24 hours.
-* Tweak - Improved refund error messages in PayPal standard.
+* Tweak - Improved refund error messages in PayPal Standard.
 * Tweak - Removed language pack downloader in favour of translate.wordpress.org.
 * Tweak - Added onboarding wizard button to the contextual help so it can be accessed again.
 * Tweak - When a WordPress user is deleted, turn any orders they have into Guest orders.
@@ -1303,7 +1375,7 @@
 * Feature - Customer list reports.
 * Feature - Reports - New design, export csvs, more data.
 * Feature - Ability to link past orders to a customer (before they registered).
-* Feature - Authorize option for paypal standard.
+* Feature - Authorize option for PayPal Standard.
 * Feature - Separate options for countries you can ship to and sell to.
 * Feature - BACS supports multiple account details.
 * Feature - PayPal PDT support (as alternative to IPN).
@@ -1356,8 +1428,8 @@
 * Fix - Tweaked popularity sorting to work better when no sales are present.
 * Fix - Quote encoding in email subjects.
 * Fix - Added $wp_error parameter during checkout process to ensure WP_Error object is returned on error and checkout process is properly stopped.
-* Refactor - Taken out Piwik integration, use https://wordpress.org/extend/plugins/woocommerce-piwik-integration/ from now on.
-* Refactor - Taken out ShareYourCart integration, use https://wordpress.org/extend/plugins/shareyourcart/ from now on.
+* Refactor - Taken out Piwik integration, use https://wordpress.org/plugins/woocommerce-piwik-integration/ from now on.
+* Refactor - Taken out ShareYourCart integration, use https://wordpress.org/plugins/shareyourcart/ from now on.
 * Refactor - Moved woocommerce_get_formatted_product_name function into WC_Product class.
 * Refactor - Improved parameter handling in woocommerce_related_products() function.
 * Refactor - Widget classes (added abstract and combined similar widgets).
@@ -1597,7 +1669,7 @@
 = 2.0.4 - 18/03/2013 =
 * Tweak - Like my account, added order_count attribute to view order shortcode.
 * Tweak - Moved WC_Order_Item_Meta into own file.
-* Tweak - PayPal standard gateway - no longer needs sandbox fix, and notify-validate should be first in the requests.
+* Tweak - PayPal Standard gateway - no longer needs sandbox fix, and notify-validate should be first in the requests.
 * Tweak - Flat rate interface tidy up.
 * Tweak - Add order_id to woocommerce_download_product hook
 * Tweak - Disabled prettyPhoto deeplinking

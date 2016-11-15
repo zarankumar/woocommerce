@@ -393,7 +393,7 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Products_Controller 
 					'readonly'    => true,
 				),
 				'visible' => array(
-					'description' => __( "Define if the attribute is visible on the \"Additional Information\" tab in the product's page.", 'woocommerce' ),
+					'description' => __( "Define if the attribute is visible on the \"Additional information\" tab in the product's page.", 'woocommerce' ),
 					'type'        => 'boolean',
 					'default'     => false,
 					'context'     => array( 'view', 'edit' ),
@@ -500,6 +500,7 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Products_Controller 
 					'readonly'    => true,
 				),
 				'weight' => array(
+					/* translators: %s: weight unit */
 					'description' => sprintf( __( 'Variation weight (%s).', 'woocommerce' ), $weight_unit ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -510,16 +511,19 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Products_Controller 
 					'context'     => array( 'view', 'edit' ),
 					'properties'  => array(
 						'length' => array(
+							/* translators: %s: dimension unit */
 							'description' => sprintf( __( 'Variation length (%s).', 'woocommerce' ), $dimension_unit ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),
 						'width' => array(
+							/* translators: %s: dimension unit */
 							'description' => sprintf( __( 'Variation width (%s).', 'woocommerce' ), $dimension_unit ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),
 						'height' => array(
+							/* translators: %s: dimension unit */
 							'description' => sprintf( __( 'Variation height (%s).', 'woocommerce' ), $dimension_unit ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),

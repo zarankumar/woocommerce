@@ -25,6 +25,19 @@ function wc_string_to_bool( $string ) {
 }
 
 /**
+ * Converts a bool to a string.
+ * @since 2.7.0
+ * @param bool $bool
+ * @return string yes or no
+ */
+function wc_bool_to_string( $bool ) {
+	if ( ! is_bool( $bool ) ) {
+		$bool = wc_string_to_bool( $bool );
+	}
+	return true === $bool ? 'yes' : 'no';
+}
+
+/**
  * Explode a string into an array by $delimiter and remove empty values.
  * @since 2.7.0
  * @param string $string
@@ -298,6 +311,17 @@ function wc_format_localized_decimal( $value ) {
 }
 
 /**
+ * Format a coupon code.
+ *
+ * @since  2.7.0
+ * @param  string $value
+ * @return string
+ */
+function wc_format_coupon_code( $value ) {
+	return apply_filters( 'woocommerce_coupon_code', $value );
+}
+
+/**
  * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
  * Non-scalar values are ignored.
  * @param string|array $var
@@ -395,8 +419,8 @@ function get_woocommerce_price_format() {
  * @return string
  */
 function wc_get_price_thousand_separator() {
-	$separator = stripslashes( get_option( 'woocommerce_price_thousand_sep' ) );
-	return $separator;
+	$separator = apply_filters( 'wc_get_price_thousand_separator', get_option( 'woocommerce_price_thousand_sep' ) );
+	return stripslashes( $separator );
 }
 
 /**
@@ -405,8 +429,8 @@ function wc_get_price_thousand_separator() {
  * @return string
  */
 function wc_get_price_decimal_separator() {
-	$separator = stripslashes( get_option( 'woocommerce_price_decimal_sep' ) );
-	return $separator ? $separator : '.';
+	$separator = apply_filters( 'wc_get_price_decimal_separator', get_option( 'woocommerce_price_decimal_sep' ) );
+	return $separator ? stripslashes( $separator ) : '.';
 }
 
 /**
@@ -415,7 +439,8 @@ function wc_get_price_decimal_separator() {
  * @return int
  */
 function wc_get_price_decimals() {
-	return absint( get_option( 'woocommerce_price_num_decimals', 2 ) );
+	$decimals = apply_filters( 'wc_get_price_decimals', get_option( 'woocommerce_price_num_decimals', 2 ) );
+	return absint( $decimals );
 }
 
 /**

@@ -688,6 +688,7 @@ class WC_REST_Orders_Controller extends WC_REST_Posts_Controller {
 	 */
 	public function create_item( $request ) {
 		if ( ! empty( $request['id'] ) ) {
+			/* translators: %s: post type */
 			return new WP_Error( "woocommerce_rest_{$this->post_type}_exists", sprintf( __( 'Cannot create existing %s.', 'woocommerce' ), $this->post_type ), array( 'status' => 400 ) );
 		}
 
@@ -903,12 +904,12 @@ class WC_REST_Orders_Controller extends WC_REST_Posts_Controller {
 							'context'     => array( 'view', 'edit' ),
 						),
 						'address_1' => array(
-							'description' => __( 'Address line 1.', 'woocommerce' ),
+							'description' => __( 'Address 1', 'woocommerce' ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),
 						'address_2' => array(
-							'description' => __( 'Address line 2.', 'woocommerce' ),
+							'description' => __( 'Address 2', 'woocommerce' ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),
@@ -966,12 +967,12 @@ class WC_REST_Orders_Controller extends WC_REST_Posts_Controller {
 							'context'     => array( 'view', 'edit' ),
 						),
 						'address_1' => array(
-							'description' => __( 'Address line 1.', 'woocommerce' ),
+							'description' => __( 'Address 1', 'woocommerce' ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),
 						'address_2' => array(
-							'description' => __( 'Address line 2.', 'woocommerce' ),
+							'description' => __( 'Address 2', 'woocommerce' ),
 							'type'        => 'string',
 							'context'     => array( 'view', 'edit' ),
 						),

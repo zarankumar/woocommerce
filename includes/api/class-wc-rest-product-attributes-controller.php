@@ -285,7 +285,7 @@ class WC_REST_Product_Attributes_Controller extends WC_REST_Controller {
 		$response->header( 'Location', rest_url( '/' . $this->namespace . '/' . $this->rest_base . '/' . $attribute->attribute_id ) );
 
 		// Clear transients.
-		flush_rewrite_rules();
+		wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 		delete_transient( 'wc_attribute_taxonomies' );
 
 		return $response;
@@ -350,17 +350,19 @@ class WC_REST_Product_Attributes_Controller extends WC_REST_Controller {
 			}
 		}
 
-		$update = $wpdb->update(
-			$wpdb->prefix . 'woocommerce_attribute_taxonomies',
-			$args,
-			array( 'attribute_id' => $id ),
-			$format,
-			array( '%d' )
-		);
+		if ( $args ) {
+			$update = $wpdb->update(
+				$wpdb->prefix . 'woocommerce_attribute_taxonomies',
+				$args,
+				array( 'attribute_id' => $id ),
+				$format,
+				array( '%d' )
+			);
 
-		// Checks for errors.
-		if ( false === $update ) {
-			return new WP_Error( 'woocommerce_rest_cannot_edit', __( 'Could not edit the attribute.', 'woocommerce' ), array( 'status' => 400 ) );
+			// Checks for errors.
+			if ( false === $update ) {
+				return new WP_Error( 'woocommerce_rest_cannot_edit', __( 'Could not edit the attribute.', 'woocommerce' ), array( 'status' => 400 ) );
+			}
 		}
 
 		$attribute = $this->get_attribute( $id );
@@ -384,7 +386,7 @@ class WC_REST_Product_Attributes_Controller extends WC_REST_Controller {
 		$response = $this->prepare_item_for_response( $attribute, $request );
 
 		// Clear transients.
-		flush_rewrite_rules();
+		wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 		delete_transient( 'wc_attribute_taxonomies' );
 
 		return rest_ensure_response( $response );
@@ -447,7 +449,7 @@ class WC_REST_Product_Attributes_Controller extends WC_REST_Controller {
 		do_action( 'woocommerce_attribute_deleted', $attribute->attribute_id, $attribute->attribute_name, $taxonomy );
 
 		// Clear transients.
-		flush_rewrite_rules();
+		wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 		delete_transient( 'wc_attribute_taxonomies' );
 
 		return $response;
@@ -632,11 +634,11 @@ class WC_REST_Product_Attributes_Controller extends WC_REST_Controller {
 	 */
 	protected function validate_attribute_slug( $slug, $new_data = true ) {
 		if ( strlen( $slug ) >= 28 ) {
-			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_too_long', sprintf( __( 'Slug "%s" is too long (28 characters max).', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
+			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_too_long', sprintf( __( 'Slug "%s" is too long (28 characters max). Shorten it, please.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
 		} elseif ( wc_check_if_attribute_name_is_reserved( $slug ) ) {
-			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_reserved_name', sprintf( __( 'Slug "%s" is not allowed because it is a reserved term.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
+			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_reserved_name', sprintf( __( 'Slug "%s" is not allowed because it is a reserved term. Change it, please.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
 		} elseif ( $new_data && taxonomy_exists( wc_attribute_taxonomy_name( $slug ) ) ) {
-			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_already_exists', sprintf( __( 'Slug "%s" is already in use.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
+			return new WP_Error( 'woocommerce_rest_invalid_product_attribute_slug_already_exists', sprintf( __( 'Slug "%s" is already in use. Change it, please.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
 		}
 
 		return true;

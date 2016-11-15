@@ -117,7 +117,7 @@ function wc_create_order( $args = array() ) {
  */
 function wc_update_order( $args ) {
 	if ( ! $args['order_id'] ) {
-		return new WP_Error( __( 'Invalid order ID', 'woocommerce' ) );
+		return new WP_Error( __( 'Invalid order ID.', 'woocommerce' ) );
 	}
 	return wc_create_order( $args );
 }
@@ -174,7 +174,7 @@ function wc_get_template( $template_name, $args = array(), $template_path = '', 
 	$located = wc_locate_template( $template_name, $template_path, $default_path );
 
 	if ( ! file_exists( $located ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', $located ), '2.1' );
+		_doing_it_wrong( __FUNCTION__, sprintf( __( '%s does not exist.', 'woocommerce' ), '<code>' . $located . '</code>' ), '2.1' );
 		return;
 	}
 
@@ -503,7 +503,7 @@ function get_woocommerce_currency_symbol( $currency = '' ) {
 		'INR' => '&#8377;',
 		'IQD' => '&#x639;.&#x62f;',
 		'IRR' => '&#xfdfc;',
-		'ISK' => 'Kr.',
+		'ISK' => 'kr.',
 		'JEP' => '&pound;',
 		'JMD' => '&#36;',
 		'JOD' => '&#x62f;.&#x627;',
@@ -776,7 +776,7 @@ function wc_get_page_children( $page_id ) {
 function flush_rewrite_rules_on_shop_page_save( $post_id ) {
 	$shop_page_id = wc_get_page_id( 'shop' );
 	if ( $shop_page_id === $post_id || in_array( $post_id, wc_get_page_children( $shop_page_id ) ) ) {
-		flush_rewrite_rules();
+		do_action( 'woocommerce_flush_rewrite_rules' );
 	}
 }
 add_action( 'save_post', 'flush_rewrite_rules_on_shop_page_save' );
@@ -1215,7 +1215,7 @@ function wc_get_credit_card_type_label( $type ) {
  * @param string $url   URL of the page to return to.
  */
 function wc_back_link( $label, $url ) {
-	echo '<small class="wc-admin-breadcrumb"><a href="' . esc_url( $url ) . '" title="' . esc_attr( $label ) . '">&#x2934;</a></small>';
+	echo '<small class="wc-admin-breadcrumb"><a href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $label ) . '">&#x2934;</a></small>';
 }
 
 /**
@@ -1245,13 +1245,16 @@ function wc_help_tip( $tip, $allow_html = false ) {
  * @return string[]
  */
 function wc_get_wildcard_postcodes( $postcode, $country = '' ) {
-	$postcodes       = array( $postcode );
-	$postcode        = wc_format_postcode( $postcode, $country );
-	$postcodes[]     = $postcode;
-	$postcode_length = strlen( $postcode );
+	$formatted_postcode = wc_format_postcode( $postcode, $country );
+	$length             = strlen( $formatted_postcode );
+	$postcodes          = array(
+		$postcode,
+		$formatted_postcode,
+		$formatted_postcode . '*',
+	);
 
-	for ( $i = 0; $i < $postcode_length; $i ++ ) {
-		$postcodes[] = substr( $postcode, 0, ( $i + 1 ) * -1 ) . '*';
+	for ( $i = 0; $i < $length; $i ++ ) {
+		$postcodes[] = substr( $formatted_postcode, 0, ( $i + 1 ) * -1 ) . '*';
 	}
 
 	return $postcodes;

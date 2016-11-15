@@ -23,11 +23,11 @@ class WC_Widget_Rating_Filter extends WC_Widget {
 		$this->widget_cssclass    = 'woocommerce widget_rating_filter';
 		$this->widget_description = __( 'Filter products by rating when viewing product archives and categories.', 'woocommerce' );
 		$this->widget_id          = 'woocommerce_rating_filter';
-		$this->widget_name        = __( 'WooCommerce Average Rating Filter', 'woocommerce' );
+		$this->widget_name        = __( 'WooCommerce average rating filter', 'woocommerce' );
 		$this->settings           = array(
 			'title'  => array(
 				'type'  => 'text',
-				'std'   => __( 'Average Rating', 'woocommerce' ),
+				'std'   => __( 'Average rating', 'woocommerce' ),
 				'label' => __( 'Title', 'woocommerce' ),
 			),
 		);
@@ -174,7 +174,7 @@ class WC_Widget_Rating_Filter extends WC_Widget {
 
 			echo '<a href="' . esc_url( apply_filters( 'woocommerce_rating_filter_link', $link ) ) . '">';
 
-			echo '<span class="star-rating" title="' . esc_attr( sprintf( __( 'Rated %s and above', 'woocommerce' ), $rating ) ) . '">
+			echo '<span class="star-rating">
 					<span style="width:' . esc_attr( ( $rating / 5 ) * 100 ) . '%">' . sprintf( __( 'Rated %s and above', 'woocommerce' ), $rating ) . '</span>
 				</span> (' . esc_html( $count ) . ')';
 

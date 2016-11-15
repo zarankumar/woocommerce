@@ -189,9 +189,9 @@ function _wc_get_orders_generate_customer_meta_query( $values, $relation = 'or' 
  */
 function wc_get_order_statuses() {
 	$order_statuses = array(
-		'wc-pending'    => _x( 'Pending Payment', 'Order status', 'woocommerce' ),
+		'wc-pending'    => _x( 'Pending payment', 'Order status', 'woocommerce' ),
 		'wc-processing' => _x( 'Processing', 'Order status', 'woocommerce' ),
-		'wc-on-hold'    => _x( 'On Hold', 'Order status', 'woocommerce' ),
+		'wc-on-hold'    => _x( 'On hold', 'Order status', 'woocommerce' ),
 		'wc-completed'  => _x( 'Completed', 'Order status', 'woocommerce' ),
 		'wc-cancelled'  => _x( 'Cancelled', 'Order status', 'woocommerce' ),
 		'wc-refunded'   => _x( 'Refunded', 'Order status', 'woocommerce' ),
@@ -208,6 +208,15 @@ function wc_get_order_statuses() {
 function wc_is_order_status( $maybe_status ) {
 	$order_statuses = wc_get_order_statuses();
 	return isset( $order_statuses[ $maybe_status ] );
+}
+
+/**
+ * Get list of statuses which are consider 'paid'.
+ * @since  2.7.0
+ * @return array
+ */
+function wc_get_is_paid_statuses() {
+	return apply_filters( 'woocommerce_order_is_paid_statuses', array( 'processing', 'completed' ) );
 }
 
 /**
@@ -940,7 +949,7 @@ function wc_order_fully_refunded( $order_id ) {
 	// Create the refund object
 	wc_create_refund( array(
 		'amount'     => $max_refund,
-		'reason'     => __( 'Order Fully Refunded', 'woocommerce' ),
+		'reason'     => __( 'Order fully refunded', 'woocommerce' ),
 		'order_id'   => $order_id,
 		'line_items' => array(),
 	) );
@@ -1104,10 +1113,11 @@ function wc_update_coupon_usage_counts( $order_id ) {
 		}
 	}
 }
-add_action( 'woocommerce_order_status_completed', 'wc_update_total_sales_counts' );
-add_action( 'woocommerce_order_status_processing', 'wc_update_total_sales_counts' );
-add_action( 'woocommerce_order_status_on-hold', 'wc_update_total_sales_counts' );
-add_action( 'woocommerce_order_status_cancelled', 'wc_update_total_sales_counts' );
+add_action( 'woocommerce_order_status_pending', 'wc_update_coupon_usage_counts' );
+add_action( 'woocommerce_order_status_completed', 'wc_update_coupon_usage_counts' );
+add_action( 'woocommerce_order_status_processing', 'wc_update_coupon_usage_counts' );
+add_action( 'woocommerce_order_status_on-hold', 'wc_update_coupon_usage_counts' );
+add_action( 'woocommerce_order_status_cancelled', 'wc_update_coupon_usage_counts' );
 
 /**
  * When a payment is complete, we can reduce stock levels for items within an order.
@@ -1138,8 +1148,10 @@ function wc_reduce_stock_levels( $order_id ) {
 				$item_name = $product->get_sku() ? $product->get_sku(): $item['product_id'];
 
 				if ( ! empty( $item['variation_id'] ) ) {
+					/* translators: 1: item name 2: variation id 3: old stock quantity 4: new stock quantity */
 					$order->add_order_note( sprintf( __( 'Item %1$s variation #%2$s stock reduced from %3$s to %4$s.', 'woocommerce' ), $item_name, $item['variation_id'], $new_stock + $qty, $new_stock ) );
 				} else {
+					/* translators: 1: item name 2: old stock quantity 3: new stock quantity */
 					$order->add_order_note( sprintf( __( 'Item %1$s stock reduced from %2$s to %3$s.', 'woocommerce' ), $item_name, $new_stock + $qty, $new_stock ) );
 				}
 

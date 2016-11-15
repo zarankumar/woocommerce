@@ -296,7 +296,7 @@ class WC_Shipping {
 				}
 
 				// Store total costs
-				if ( $chosen_method ) {
+				if ( $chosen_method && isset( $package['rates'][ $chosen_method ] ) ) {
 					$rate = $package['rates'][ $chosen_method ];
 
 					// Merge cost and taxes - label and ID will be the same
@@ -402,7 +402,7 @@ class WC_Shipping {
 	 * @deprecated 2.6.0 Was previously used to determine sort order of methods, but this is now controlled by zones and thus unused.
 	 */
 	public function sort_shipping_methods() {
-		_deprecated_function( 'sort_shipping_methods', '2.6', '' );
+		_deprecated_function( 'sort_shipping_methods', '2.6' );
 		return $this->shipping_methods;
 	}
 }

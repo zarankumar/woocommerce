@@ -25,25 +25,25 @@ function woocommerce_show_messages() {
  * @deprecated
  */
 function woocommerce_weekend_area_js() {
-	_deprecated_function( 'woocommerce_weekend_area_js', '2.1', '' );
+	_deprecated_function( 'woocommerce_weekend_area_js', '2.1' );
 }
 /**
  * @deprecated
  */
 function woocommerce_tooltip_js() {
-	_deprecated_function( 'woocommerce_tooltip_js', '2.1', '' );
+	_deprecated_function( 'woocommerce_tooltip_js', '2.1' );
 }
 /**
  * @deprecated
  */
 function woocommerce_datepicker_js() {
-	_deprecated_function( 'woocommerce_datepicker_js', '2.1', '' );
+	_deprecated_function( 'woocommerce_datepicker_js', '2.1' );
 }
 /**
  * @deprecated
  */
 function woocommerce_admin_scripts() {
-	_deprecated_function( 'woocommerce_admin_scripts', '2.1', '' );
+	_deprecated_function( 'woocommerce_admin_scripts', '2.1' );
 }
 /**
  * @deprecated
@@ -510,6 +510,7 @@ global $wc_map_deprecated_filters;
 $wc_map_deprecated_filters = array(
 	'woocommerce_add_to_cart_fragments' => 'add_to_cart_fragments',
 	'woocommerce_add_to_cart_redirect'  => 'add_to_cart_redirect',
+	'woocommerce_structured_data_order' => 'woocommerce_email_order_schema_markup',
 );
 
 foreach ( $wc_map_deprecated_filters as $new => $old ) {
@@ -738,3 +739,34 @@ function woocommerce_calc_shipping_backwards_compatibility( $value ) {
 }
 
 add_filter( 'pre_option_woocommerce_calc_shipping', 'woocommerce_calc_shipping_backwards_compatibility' );
+
+/**
+ * @deprecated 2.7.0
+ * @see WC_Structured_Data class
+ *
+ * @return string
+ */
+function woocommerce_get_product_schema() {
+	_deprecated_function( 'woocommerce_get_product_schema', '2.7' );
+
+	global $product;
+
+	$schema = "Product";
+
+	// Downloadable product schema handling
+	if ( $product->is_downloadable() ) {
+		switch ( $product->download_type ) {
+			case 'application' :
+				$schema = "SoftwareApplication";
+				break;
+			case 'music' :
+				$schema = "MusicAlbum";
+				break;
+			default :
+				$schema = "Product";
+				break;
+		}
+	}
+
+	return 'http://schema.org/' . $schema;
+}

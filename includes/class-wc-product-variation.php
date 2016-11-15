@@ -102,7 +102,9 @@ class WC_Product_Variation extends WC_Product {
 	 * @return bool
 	 */
 	public function __isset( $key ) {
-		if ( in_array( $key, array_keys( $this->variation_level_meta_data ) ) ) {
+		if ( in_array( $key, array( 'variation_data', 'variation_has_stock' ) ) ) {
+			return true;
+		} elseif ( in_array( $key, array_keys( $this->variation_level_meta_data ) ) ) {
 			return metadata_exists( 'post', $this->variation_id, '_' . $key );
 		} elseif ( in_array( $key, array_keys( $this->variation_inherited_meta_data ) ) ) {
 			return metadata_exists( 'post', $this->variation_id, '_' . $key ) || metadata_exists( 'post', $this->id, '_' . $key );
@@ -437,9 +439,9 @@ class WC_Product_Variation extends WC_Product {
 	 * Uses queries rather than update_post_meta so we can do this in one query (to avoid stock issues).
 	 * We cannot rely on the original loaded value in case another order was made since then.
 	 *
-	 * @param int $amount
-	 * @param string $mode can be set, add, or subtract
-	 * @return int new stock level
+	 * @param  int     $amount
+	 * @param  string  $mode    can be set, add, or subtract
+	 * @return int              new stock level
 	 */
 	public function set_stock( $amount = null, $mode = 'set' ) {
 		global $wpdb;
@@ -477,6 +479,17 @@ class WC_Product_Variation extends WC_Product {
 			// Trigger action
 			do_action( 'woocommerce_variation_set_stock', $this );
 
+		// If not managing stock and clearing the stock meta, trigger action to indicate that stock has changed (infinite stock)
+		} elseif ( '' === $amount ) {
+
+			if ( false !== get_post_meta( $this->variation_id, '_stock' ) ) {
+
+				delete_post_meta( $this->variation_id, '_stock' );
+				// Trigger action
+				do_action( 'woocommerce_variation_set_stock', $this );
+			}
+
+		// If not managing stock and setting stock, apply changes to the parent
 		} elseif ( ! is_null( $amount ) ) {
 			return $this->parent->set_stock( $amount, $mode );
 		}

@@ -88,13 +88,14 @@ class WC_Query {
 
 		switch ( $endpoint ) {
 			case 'order-pay' :
-				$title = __( 'Pay for Order', 'woocommerce' );
+				$title = __( 'Pay for order', 'woocommerce' );
 			break;
 			case 'order-received' :
-				$title = __( 'Order Received', 'woocommerce' );
+				$title = __( 'Order received', 'woocommerce' );
 			break;
 			case 'orders' :
 				if ( ! empty( $wp->query_vars['orders'] ) ) {
+					/* translators: %s: page */
 					$title = sprintf( __( 'Orders (page %d)', 'woocommerce' ), intval( $wp->query_vars['orders'] ) );
 				} else {
 					$title = __( 'Orders', 'woocommerce' );
@@ -102,25 +103,26 @@ class WC_Query {
 			break;
 			case 'view-order' :
 				$order = wc_get_order( $wp->query_vars['view-order'] );
+				/* translators: %s: order number */
 				$title = ( $order ) ? sprintf( __( 'Order #%s', 'woocommerce' ), $order->get_order_number() ) : '';
 			break;
 			case 'downloads' :
 				$title = __( 'Downloads', 'woocommerce' );
 			break;
 			case 'edit-account' :
-				$title = __( 'Account Details', 'woocommerce' );
+				$title = __( 'Account details', 'woocommerce' );
 			break;
 			case 'edit-address' :
 				$title = __( 'Addresses', 'woocommerce' );
 			break;
 			case 'payment-methods' :
-				$title = __( 'Payment Methods', 'woocommerce' );
+				$title = __( 'Payment methods', 'woocommerce' );
 			break;
 			case 'add-payment-method' :
-				$title = __( 'Add Payment Method', 'woocommerce' );
+				$title = __( 'Add payment method', 'woocommerce' );
 			break;
 			case 'lost-password' :
-				$title = __( 'Lost Password', 'woocommerce' );
+				$title = __( 'Lost password', 'woocommerce' );
 			break;
 			default :
 				$title = apply_filters( 'woocommerce_endpoint_' . $endpoint . '_title', '' );
@@ -392,7 +394,7 @@ class WC_Query {
 		$q->set( 'tax_query', $this->get_tax_query( $q->get( 'tax_query' ) ) );
 		$q->set( 'posts_per_page', $q->get( 'posts_per_page' ) ? $q->get( 'posts_per_page' ) : apply_filters( 'loop_shop_per_page', get_option( 'posts_per_page' ) ) );
 		$q->set( 'wc_query', 'product_query' );
-		$q->set( 'post__in', array_unique( apply_filters( 'loop_shop_post_in', array() ) ) );
+		$q->set( 'post__in', array_unique( (array) apply_filters( 'loop_shop_post_in', array() ) ) );
 
 		do_action( 'woocommerce_product_query', $q, $this );
 	}
@@ -506,7 +508,7 @@ class WC_Query {
 	public function order_by_rating_post_clauses( $args ) {
 		global $wpdb;
 
-		_deprecated_function( 'order_by_rating_post_clauses', '2.7', '' );
+		_deprecated_function( 'order_by_rating_post_clauses', '2.7' );
 
 		$args['fields'] .= ", AVG( $wpdb->commentmeta.meta_value ) as average_rating ";
 		$args['where']  .= " AND ( $wpdb->commentmeta.meta_key = 'rating' OR $wpdb->commentmeta.meta_key IS null ) ";
@@ -545,35 +547,12 @@ class WC_Query {
 	 */
 	private function price_filter_meta_query() {
 		if ( isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) ) {
-			$min = isset( $_GET['min_price'] ) ? floatval( $_GET['min_price'] ) : 0;
-			$max = isset( $_GET['max_price'] ) ? floatval( $_GET['max_price'] ) : 9999999999;
+			$meta_query = wc_get_min_max_price_meta_query( $_GET );
+			$meta_query['price_filter'] = true;
 
-			/**
-			 * Adjust if the store taxes are not displayed how they are stored.
-			 * Max is left alone because the filter was already increased.
-			 * Kicks in when prices excluding tax are displayed including tax.
-			 */
-			if ( wc_tax_enabled() && 'incl' === get_option( 'woocommerce_tax_display_shop' ) && ! wc_prices_include_tax() ) {
-				$tax_classes = array_merge( array( '' ), WC_Tax::get_tax_classes() );
-				$class_min   = $min;
-
-				foreach ( $tax_classes as $tax_class ) {
-					if ( $tax_rates = WC_Tax::get_rates( $tax_class ) ) {
-						$class_min = $min - WC_Tax::get_tax_total( WC_Tax::calc_exclusive_tax( $min, $tax_rates ) );
-					}
-				}
-
-				$min = $class_min;
-			}
-
-			return array(
-				'key'          => '_price',
-				'value'        => array( $min, $max ),
-				'compare'      => 'BETWEEN',
-				'type'         => 'DECIMAL',
-				'price_filter' => true,
-			);
+			return $meta_query;
 		}
+
 		return array();
 	}
 
@@ -759,7 +738,7 @@ class WC_Query {
 	 * @deprecated 2.6.0
 	 */
 	public function layered_nav_init() {
-		_deprecated_function( 'layered_nav_init', '2.6', '' );
+		_deprecated_function( 'layered_nav_init', '2.6' );
 	}
 
 	/**
@@ -767,7 +746,7 @@ class WC_Query {
 	 * @deprecated 2.6.0 due to performance concerns
 	 */
 	public function get_products_in_view() {
-		_deprecated_function( 'get_products_in_view', '2.6', '' );
+		_deprecated_function( 'get_products_in_view', '2.6' );
 	}
 
 	/**
@@ -775,6 +754,6 @@ class WC_Query {
 	 * @deprecated 2.6.0 due to performance concerns
 	 */
 	public function layered_nav_query( $filtered_posts ) {
-		_deprecated_function( 'layered_nav_query', '2.6', '' );
+		_deprecated_function( 'layered_nav_query', '2.6' );
 	}
 }

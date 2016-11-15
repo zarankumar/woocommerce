@@ -18143,7 +18143,7 @@ msgstr ""
 
 #: includes/gateways/paypal/class-wc-gateway-paypal.php:37
 msgid ""
-"PayPal standard sends customers to PayPal to enter their payment "
+"PayPal Standard sends customers to PayPal to enter their payment "
 "information. PayPal IPN requires fsockopen/cURL support to update order "
 "statuses after payment. Check the %1$ssystem status%2$s page for more "
 "details."
@@ -18261,7 +18261,7 @@ msgid "Shipping via %s"
 msgstr ""
 
 #: includes/gateways/paypal/includes/settings-paypal.php:14
-msgid "Enable PayPal standard"
+msgid "Enable PayPal Standard"
 msgstr ""
 
 #: includes/gateways/paypal/includes/settings-paypal.php:28
@@ -19083,18 +19083,18 @@ msgstr ""
 msgid "The register_routes() method must be overriden"
 msgstr ""
 
-#: includes/vendor/class-wp-rest-controller.php:40
-#: includes/vendor/class-wp-rest-controller.php:50
-#: includes/vendor/class-wp-rest-controller.php:60
-#: includes/vendor/class-wp-rest-controller.php:70
-#: includes/vendor/class-wp-rest-controller.php:80
-#: includes/vendor/class-wp-rest-controller.php:90
-#: includes/vendor/class-wp-rest-controller.php:100
-#: includes/vendor/class-wp-rest-controller.php:110
-#: includes/vendor/class-wp-rest-controller.php:120
-#: includes/vendor/class-wp-rest-controller.php:130
-#: includes/vendor/class-wp-rest-controller.php:140
-#: includes/vendor/class-wp-rest-controller.php:151
+#: includes/vendor/abstract-wp-rest-controller.php:40
+#: includes/vendor/abstract-wp-rest-controller.php:50
+#: includes/vendor/abstract-wp-rest-controller.php:60
+#: includes/vendor/abstract-wp-rest-controller.php:70
+#: includes/vendor/abstract-wp-rest-controller.php:80
+#: includes/vendor/abstract-wp-rest-controller.php:90
+#: includes/vendor/abstract-wp-rest-controller.php:100
+#: includes/vendor/abstract-wp-rest-controller.php:110
+#: includes/vendor/abstract-wp-rest-controller.php:120
+#: includes/vendor/abstract-wp-rest-controller.php:130
+#: includes/vendor/abstract-wp-rest-controller.php:140
+#: includes/vendor/abstract-wp-rest-controller.php:151
 msgid "Method '%s' not implemented. Must be over-ridden in subclass."
 msgstr ""
 

@@ -43,7 +43,7 @@ class WC_Admin_Duplicate_Product {
 			return $actions;
 		}
 
-		$actions['duplicate'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=product&action=duplicate_product&amp;post=' . $post->ID ), 'woocommerce-duplicate-product_' . $post->ID ) . '" title="' . esc_attr__( 'Make a duplicate from this product', 'woocommerce' )
+		$actions['duplicate'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=product&action=duplicate_product&amp;post=' . $post->ID ), 'woocommerce-duplicate-product_' . $post->ID ) . '" aria-label="' . esc_attr__( 'Make a duplicate from this product', 'woocommerce' )
 			. '" rel="permalink">' . __( 'Duplicate', 'woocommerce' ) . '</a>';
 
 		return $actions;
@@ -103,7 +103,8 @@ class WC_Admin_Duplicate_Product {
 			wp_redirect( admin_url( 'post.php?action=edit&post=' . $new_id ) );
 			exit;
 		} else {
-			wp_die( __( 'Product creation failed, could not find original product:', 'woocommerce' ) . ' ' . $id );
+			/* translators: %s: product id */
+			wp_die( sprintf( __( 'Product creation failed, could not find original product: %s', 'woocommerce' ), $id ) );
 		}
 	}
 
@@ -164,6 +165,7 @@ class WC_Admin_Duplicate_Product {
 
 		// Set title for variations
 		if ( 'product_variation' === $post->post_type ) {
+			/* translators: 1: variation id 2: product name */
 			$post_title = sprintf( __( 'Variation #%1$s of %2$s', 'woocommerce' ), absint( $new_post_id ), esc_html( get_the_title( $post_parent ) ) );
 			$wpdb->update(
 				$wpdb->posts,

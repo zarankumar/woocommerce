@@ -218,10 +218,23 @@ class WC_Gateway_Paypal_Request {
 		$item_names = array();
 
 		foreach ( $order->get_items() as $item ) {
-			$item_names[] = $item->get_name() . ' x ' . $item['qty'];
+			$item_name = $item->get_name();
+			$item_meta = strip_tags( wc_display_item_meta( $item, array(
+				'before'    => "",
+				'separator' => ", ",
+				'after'     => "",
+				'echo'      => false,
+				'autop'     => false,
+			) ) );
+
+			if ( $item_meta ) {
+				$item_name .= ' (' . $item_meta . ')';
+			}
+
+			$item_names[] = $item_name . ' x ' . $item->get_quantity();
 		}
 
-		return implode( ', ', $item_names );
+		return apply_filters( 'woocommerce_paypal_get_order_item_names', implode( ', ', $item_names ), $order );
 	}
 
 	/**
@@ -232,13 +245,19 @@ class WC_Gateway_Paypal_Request {
 	 */
 	protected function get_order_item_name( $order, $item ) {
 		$item_name = $item->get_name();
-		$item_meta = new WC_Order_Item_Meta( $item );
+		$item_meta = strip_tags( wc_display_item_meta( $item, array(
+			'before'    => "",
+			'separator' => ", ",
+			'after'     => "",
+			'echo'      => false,
+			'autop'     => false,
+		) ) );
 
-		if ( $meta = $item_meta->display( true, true ) ) {
-			$item_name .= ' ( ' . $meta . ' )';
+		if ( $item_meta ) {
+			$item_name .= ' (' . $item_meta . ')';
 		}
 
-		return $item_name;
+		return apply_filters( 'woocommerce_paypal_get_order_item_name', $item_name, $order, $item );
 	}
 
 	/**
@@ -274,8 +293,8 @@ class WC_Gateway_Paypal_Request {
 				$product          = $item->get_product();
 				$sku              = $product ? $product->get_sku() : '';
 				$item_line_total  = $this->number_format( $order->get_item_subtotal( $item, false ), $order );
-				$line_item        = $this->add_line_item( $this->get_order_item_name( $order, $item ), $item['qty'], $item_line_total, $sku );
-				$calculated_total += $item_line_total * $item['qty'];
+				$line_item        = $this->add_line_item( $this->get_order_item_name( $order, $item ), $item->get_quantity(), $item_line_total, $sku );
+				$calculated_total += $item_line_total * $item->get_quantity();
 			}
 
 			if ( ! $line_item ) {
@@ -295,7 +314,7 @@ class WC_Gateway_Paypal_Request {
 	 * Add PayPal Line Item.
 	 * @param  string  $item_name
 	 * @param  int     $quantity
-	 * @param  int     $amount
+	 * @param  float   $amount
 	 * @param  string  $item_number
 	 * @return bool successfully added or not
 	 */
@@ -307,8 +326,8 @@ class WC_Gateway_Paypal_Request {
 		}
 
 		$this->line_items[ 'item_name_' . $index ]   = html_entity_decode( wc_trim_string( $item_name ? $item_name : __( 'Item', 'woocommerce' ), 127 ), ENT_NOQUOTES, 'UTF-8' );
-		$this->line_items[ 'quantity_' . $index ]    = $quantity;
-		$this->line_items[ 'amount_' . $index ]      = $amount;
+		$this->line_items[ 'quantity_' . $index ]    = (int) $quantity;
+		$this->line_items[ 'amount_' . $index ]      = (float) $amount;
 		$this->line_items[ 'item_number_' . $index ] = $item_number;
 
 		return true;

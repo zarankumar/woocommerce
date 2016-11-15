@@ -1363,7 +1363,7 @@ class WC_API_Products extends WC_API_Resource {
 				if ( ! empty( $new_sku ) ) {
 					$unique_sku = wc_product_has_unique_sku( $product_id, $new_sku );
 					if ( ! $unique_sku ) {
-						throw new WC_API_Exception( 'woocommerce_api_product_sku_already_exists', __( 'The SKU already exists on another product', 'woocommerce' ), 400 );
+						throw new WC_API_Exception( 'woocommerce_api_product_sku_already_exists', __( 'The SKU already exists on another product.', 'woocommerce' ), 400 );
 					} else {
 						update_post_meta( $product_id, '_sku', $new_sku );
 					}
@@ -1753,6 +1753,7 @@ class WC_API_Products extends WC_API_Resource {
 			}
 
 			// Generate a useful post title
+			/* translators: 1: variation id 2: product name */
 			$variation_post_title = sprintf( __( 'Variation #%1$s of %2$s', 'woocommerce' ), $variation_id, esc_html( get_the_title( $id ) ) );
 
 			// Update or Add post
@@ -1800,7 +1801,7 @@ class WC_API_Products extends WC_API_Resource {
 					if ( ! empty( $new_sku ) ) {
 						$unique_sku = wc_product_has_unique_sku( $variation_id, $new_sku );
 						if ( ! $unique_sku ) {
-							throw new WC_API_Exception( 'woocommerce_api_product_sku_already_exists', __( 'The SKU already exists on another product', 'woocommerce' ), 400 );
+							throw new WC_API_Exception( 'woocommerce_api_product_sku_already_exists', __( 'The SKU already exists on another product.', 'woocommerce' ), 400 );
 						} else {
 							update_post_meta( $variation_id, '_sku', $new_sku );
 						}
@@ -2362,7 +2363,7 @@ class WC_API_Products extends WC_API_Resource {
 
 		// Check parsed URL.
 		if ( ! $parsed_url || ! is_array( $parsed_url ) ) {
-			throw new WC_API_Exception( 'woocommerce_api_invalid_' . $upload_for, sprintf( __( 'Invalid URL %s', 'woocommerce' ), $image_url ), 400 );
+			throw new WC_API_Exception( 'woocommerce_api_invalid_' . $upload_for, sprintf( __( 'Invalid URL %s.', 'woocommerce' ), $image_url ), 400 );
 		}
 
 		// Ensure url is valid.
@@ -2414,7 +2415,7 @@ class WC_API_Products extends WC_API_Resource {
 		if ( 0 == $filesize ) {
 			@unlink( $upload['file'] );
 			unset( $upload );
-			throw new WC_API_Exception( 'woocommerce_api_' . $upload_for . '_upload_file_error', __( 'Zero size file downloaded', 'woocommerce' ), 400 );
+			throw new WC_API_Exception( 'woocommerce_api_' . $upload_for . '_upload_file_error', __( 'Zero size file downloaded.', 'woocommerce' ), 400 );
 		}
 
 		unset( $response );
@@ -2759,7 +2760,7 @@ class WC_API_Products extends WC_API_Resource {
 			do_action( 'woocommerce_api_create_product_attribute', $id, $data );
 
 			// Clear transients.
-			flush_rewrite_rules();
+			wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 			delete_transient( 'wc_attribute_taxonomies' );
 
 			$this->server->send_status( 201 );
@@ -2843,7 +2844,7 @@ class WC_API_Products extends WC_API_Resource {
 			do_action( 'woocommerce_api_edit_product_attribute', $id, $data );
 
 			// Clear transients.
-			flush_rewrite_rules();
+			wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 			delete_transient( 'wc_attribute_taxonomies' );
 
 			return $this->get_product_attribute( $id );
@@ -2903,7 +2904,7 @@ class WC_API_Products extends WC_API_Resource {
 			do_action( 'woocommerce_api_delete_product_attribute', $id, $this );
 
 			// Clear transients.
-			flush_rewrite_rules();
+			wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
 			delete_transient( 'wc_attribute_taxonomies' );
 
 			return array( 'message' => sprintf( __( 'Deleted %s', 'woocommerce' ), 'product_attribute' ) );
@@ -3224,7 +3225,7 @@ class WC_API_Products extends WC_API_Resource {
 
 			// Limit bulk operation
 			if ( count( $data ) > $limit ) {
-				throw new WC_API_Exception( 'woocommerce_api_products_request_entity_too_large', sprintf( __( 'Unable to accept more than %s items for this request', 'woocommerce' ), $limit ), 413 );
+				throw new WC_API_Exception( 'woocommerce_api_products_request_entity_too_large', sprintf( __( 'Unable to accept more than %s items for this request.', 'woocommerce' ), $limit ), 413 );
 			}
 
 			$products = array();

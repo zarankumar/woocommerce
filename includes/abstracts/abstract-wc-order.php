@@ -146,6 +146,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	 */
 	protected function get_post_title() {
 		// @codingStandardsIgnoreStart
+		/* translators: %s: Order date */
 		return sprintf( __( 'Order &ndash; %s', 'woocommerce' ), strftime( _x( '%b %d, %Y @ %I:%M %p', 'Order date parsed by strftime', 'woocommerce' ) ) );
 		// @codingStandardsIgnoreEnd
 	}
@@ -271,7 +272,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	 * Delete data from the database.
 	 * @since 2.7.0
 	 */
-	public function delete() {
+	public function delete( $force_delete = false ) {
 		wp_delete_post( $this->get_id() );
 	}
 
@@ -1511,6 +1512,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 				}
 			}
 
+			/* translators: %s: shipping method */
 			$shipping .= apply_filters( 'woocommerce_order_shipping_to_display_shipped_via', '&nbsp;<small class="shipped_via">' . sprintf( __( 'via %s', 'woocommerce' ), $this->get_shipping_method() ) . '</small>', $this );
 
 		} elseif ( $this->get_shipping_method() ) {
@@ -1598,7 +1600,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 
 		if ( $this->get_total() > 0 && $this->get_payment_method_title() ) {
 			$total_rows['payment_method'] = array(
-				'label' => __( 'Payment Method:', 'woocommerce' ),
+				'label' => __( 'Payment method:', 'woocommerce' ),
 				'value' => $this->get_payment_method_title(),
 			);
 		}

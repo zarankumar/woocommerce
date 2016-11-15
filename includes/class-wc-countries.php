@@ -544,20 +544,21 @@ class WC_Countries {
 	public function get_default_address_fields() {
 		$fields = array(
 			'first_name' => array(
-				'label'        => __( 'First Name', 'woocommerce' ),
+				'label'        => __( 'First name', 'woocommerce' ),
 				'required'     => true,
 				'class'        => array( 'form-row-first' ),
 				'autocomplete' => 'given-name',
+				'autofocus'    => true,
 			),
 			'last_name' => array(
-				'label'        => __( 'Last Name', 'woocommerce' ),
+				'label'        => __( 'Last name', 'woocommerce' ),
 				'required'     => true,
 				'class'        => array( 'form-row-last' ),
 				'clear'        => true,
 				'autocomplete' => 'family-name',
 			),
 			'company' => array(
-				'label'        => __( 'Company Name', 'woocommerce' ),
+				'label'        => __( 'Company name', 'woocommerce' ),
 				'class'        => array( 'form-row-wide' ),
 				'autocomplete' => 'organization',
 			),
@@ -570,13 +571,13 @@ class WC_Countries {
 			),
 			'address_1' => array(
 				'label'        => __( 'Address', 'woocommerce' ),
-				'placeholder'  => _x( 'Street address', 'placeholder', 'woocommerce' ),
+				'placeholder'  => esc_attr__( 'Street address', 'woocommerce' ),
 				'required'     => true,
 				'class'        => array( 'form-row-wide', 'address-field' ),
 				'autocomplete' => 'address-line1',
 			),
 			'address_2' => array(
-				'placeholder'  => _x( 'Apartment, suite, unit etc. (optional)', 'placeholder', 'woocommerce' ),
+				'placeholder'  => esc_attr__( 'Apartment, suite, unit etc. (optional)', 'woocommerce' ),
 				'class'        => array( 'form-row-wide', 'address-field' ),
 				'required'     => false,
 				'autocomplete' => 'address-line2',
@@ -791,7 +792,10 @@ class WC_Countries {
 				'IE' => array(
 					'postcode' => array(
 						'required' => false,
-						'label'    => __( 'Postcode', 'woocommerce' ),
+						'label'    => __( 'Eircode', 'woocommerce' ),
+					),
+					'state' => array(
+						'label'       => __( 'County', 'woocommerce' ),
 					),
 				),
 				'IS' => array(
@@ -1012,7 +1016,7 @@ class WC_Countries {
 			// Add email and phone after company or last
 			if ( 'billing_' === $type && ( 'company' === $key || ( ! array_key_exists( 'company', $fields ) && end( $keys ) === $key ) ) ) {
 				$address_fields['billing_email'] = array(
-					'label'        => __( 'Email Address', 'woocommerce' ),
+					'label'        => __( 'Email address', 'woocommerce' ),
 					'required'     => true,
 					'type'         => 'email',
 					'class'        => array( 'form-row-first' ),

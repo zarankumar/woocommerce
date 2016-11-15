@@ -105,7 +105,7 @@ class WC_Checkout {
 				'type' 			=> 'text',
 				'label' 		=> __( 'Account username', 'woocommerce' ),
 				'required'      => true,
-				'placeholder' 	=> _x( 'Username', 'placeholder', 'woocommerce' ),
+				'placeholder' 	=> esc_attr__( 'Username', 'woocommerce' ),
 			);
 		}
 
@@ -114,7 +114,7 @@ class WC_Checkout {
 				'type' 				=> 'password',
 				'label' 			=> __( 'Account password', 'woocommerce' ),
 				'required'          => true,
-				'placeholder' 		=> _x( 'Password', 'placeholder', 'woocommerce' ),
+				'placeholder' 		=> esc_attr__( 'Password', 'woocommerce' ),
 			);
 		}
 
@@ -122,8 +122,8 @@ class WC_Checkout {
 			'order_comments' => array(
 				'type' => 'textarea',
 				'class' => array( 'notes' ),
-				'label' => __( 'Order Notes', 'woocommerce' ),
-				'placeholder' => _x( 'Notes about your order, e.g. special notes for delivery.', 'placeholder', 'woocommerce' ),
+				'label' => __( 'Order notes', 'woocommerce' ),
+				'placeholder' => esc_attr__( 'Notes about your order, e.g. special notes for delivery.', 'woocommerce' ),
 			),
 		);
 
@@ -234,7 +234,7 @@ class WC_Checkout {
 					'quantity'     => $values['quantity'],
 					'name'         => $product ? $product->get_title() : '',
 					'tax_class'    => $product ? $product->get_tax_class() : '',
-					'product_id'   => $product ? $product->get_id() : '',
+					'product_id'   => $product && isset( $product->id ) ? $product->id : 0,
 					'variation_id' => $product && isset( $product->variation_id ) ? $product->variation_id : 0,
 					'variation'    => $values['variation'],
 					'subtotal'     => $values['line_subtotal'],
@@ -468,16 +468,19 @@ class WC_Checkout {
 					if ( isset( $field['required'] ) && $field['required'] && ( ! isset( $this->posted[ $key ] ) || "" === $this->posted[ $key ] ) ) {
 						switch ( $fieldset_key ) {
 							case 'shipping' :
-								$field_label = sprintf( _x( 'Shipping %s', 'Shipping FIELDNAME', 'woocommerce' ), $field['label'] );
+								/* translators: %s: field name */
+								$field_label = sprintf( __( 'Shipping %s', 'woocommerce' ), $field['label'] );
 							break;
 							case 'billing' :
-								$field_label = sprintf( _x( 'Billing %s', 'Billing FIELDNAME', 'woocommerce' ), $field['label'] );
+								/* translators: %s: field name */
+								$field_label = sprintf( __( 'Billing %s', 'woocommerce' ), $field['label'] );
 							break;
 							default :
 								$field_label = $field['label'];
 							break;
 						}
-						wc_add_notice( apply_filters( 'woocommerce_checkout_required_field_notice', sprintf( _x( '%s is a required field.', 'FIELDNAME is a required field.', 'woocommerce' ), '<strong>' . $field_label . '</strong>' ), $field_label ), 'error' );
+						/* translators: %s: field name */
+						wc_add_notice( apply_filters( 'woocommerce_checkout_required_field_notice', sprintf( __( '%s is a required field.', 'woocommerce' ), '<strong>' . $field_label . '</strong>' ), $field_label ), 'error' );
 					}
 
 					if ( ! empty( $this->posted[ $key ] ) ) {
@@ -490,7 +493,7 @@ class WC_Checkout {
 										$this->posted[ $key ] = strtoupper( str_replace( ' ', '', $this->posted[ $key ] ) );
 
 										if ( ! WC_Validation::is_postcode( $this->posted[ $key ], $_POST[ $fieldset_key . '_country' ] ) ) {
-											wc_add_notice( __( 'Please enter a valid postcode/ZIP.', 'woocommerce' ), 'error' );
+											wc_add_notice( __( 'Please enter a valid postcode / ZIP.', 'woocommerce' ), 'error' );
 										} else {
 											$this->posted[ $key ] = wc_format_postcode( $this->posted[ $key ], $_POST[ $fieldset_key . '_country' ] );
 										}
@@ -499,14 +502,16 @@ class WC_Checkout {
 										$this->posted[ $key ] = wc_format_phone_number( $this->posted[ $key ] );
 
 										if ( ! WC_Validation::is_phone( $this->posted[ $key ] ) ) {
-											wc_add_notice( '<strong>' . $field['label'] . '</strong> ' . __( 'is not a valid phone number.', 'woocommerce' ), 'error' );
+											/* translators: %s: phone number */
+											wc_add_notice( sprintf( __( '%s is not a valid phone number.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
 										}
 										break;
 									case 'email' :
 										$this->posted[ $key ] = strtolower( $this->posted[ $key ] );
 
 										if ( ! is_email( $this->posted[ $key ] ) ) {
-											wc_add_notice( '<strong>' . $field['label'] . '</strong> ' . __( 'is not a valid email address.', 'woocommerce' ), 'error' );
+											/* translators: %s: email address */
+											wc_add_notice( sprintf( __( '%s is not a valid email address.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
 										}
 										break;
 									case 'state' :
@@ -525,7 +530,8 @@ class WC_Checkout {
 										// Only validate if the country has specific state options
 										if ( ! empty( $valid_states ) && is_array( $valid_states ) && sizeof( $valid_states ) > 0 ) {
 											if ( ! in_array( $this->posted[ $key ], array_keys( $valid_states ) ) ) {
-												wc_add_notice( '<strong>' . $field['label'] . '</strong> ' . __( 'is not valid. Please enter one of the following:', 'woocommerce' ) . ' ' . implode( ', ', $valid_states ), 'error' );
+												/* translators: 1: state field 2: valid states */
+												wc_add_notice( sprintf( __( '%1$s is not valid. Please enter one of the following: %2$s', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>', implode( ', ', $valid_states ) ), 'error' );
 											}
 										}
 										break;
@@ -727,9 +733,7 @@ class WC_Checkout {
 				}
 			}
 		} catch ( Exception $e ) {
-			if ( ! empty( $e ) ) {
-				wc_add_notice( $e->getMessage(), 'error' );
-			}
+			wc_add_notice( $e->getMessage(), 'error' );
 		}
 
 		// If we reached this point then there were errors
