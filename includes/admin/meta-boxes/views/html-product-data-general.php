@@ -22,7 +22,7 @@
 
 	<div class="options_group pricing show_if_simple show_if_external hidden">
 		<?php
-			woocommerce_wp_text_input( array(
+			/*woocommerce_wp_text_input( array(
 				'id'        => '_regular_price',
 				'value'     => $product_object->get_regular_price( 'edit' ),
 				'label'     => __( 'Regular price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
@@ -35,7 +35,7 @@
 				'data_type'   => 'price',
 				'label'       => __( 'Sale price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
 				'description' => '<a href="#" class="sale_schedule">' . __( 'Schedule', 'woocommerce' ) . '</a>',
-			) );
+			) );*/
 
 			$sale_price_dates_from = $product_object->get_date_on_sale_from( 'edit' ) && ( $date = $product_object->get_date_on_sale_from( 'edit' )->getOffsetTimestamp() ) ? date_i18n( 'Y-m-d', $date ) : '';
 			$sale_price_dates_to   = $product_object->get_date_on_sale_to( 'edit' ) && ( $date = $product_object->get_date_on_sale_to( 'edit' )->getOffsetTimestamp() ) ? date_i18n( 'Y-m-d', $date ) : '';

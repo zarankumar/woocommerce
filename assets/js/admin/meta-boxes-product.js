@@ -1,6 +1,15 @@
 /*global woocommerce_admin_meta_boxes */
 jQuery( function( $ ) {
 
+	// Prevent enter submitting post form.
+	$( '.woocommerce-edit-product-field__sale_price input' ).on( 'input', function( e ) {
+		if ( $( this ).val() ) {
+			$( '.woocommerce-edit-product-field__regular_price' ).addClass( 'has-sale-price' );
+		} else {
+			$( '.woocommerce-edit-product-field__regular_price' ).removeClass( 'has-sale-price' );
+		}
+	}).trigger( 'input' );
+
 	// Scroll to first checked category - https://github.com/scribu/wp-category-checklist-tree/blob/d1c3c1f449e1144542efa17dde84a9f52ade1739/category-checklist-tree.php
 	$( function() {
 		$( '[id$="-all"] > ul.categorychecklist' ).each( function() {
@@ -577,6 +586,7 @@ jQuery( function( $ ) {
 					var attachment_image = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
 
 					$product_images.append( '<li class="image" data-attachment_id="' + attachment.id + '"><img src="' + attachment_image + '" /><ul class="actions"><li><a href="#" class="delete" title="' + $el.data('delete') + '">' + $el.data('text') + '</a></li></ul></li>' );
+					$product_images.append( $product_images.find( '.add_product_images' ) );
 				}
 			});
 

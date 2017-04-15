@@ -104,7 +104,120 @@ class WC_Admin_Post_Types {
 		// Hide template for CPT archive.
 		add_filter( 'theme_page_templates', array( $this, 'hide_cpt_archive_templates' ), 10, 3 );
 		add_action( 'edit_form_top', array( $this, 'show_cpt_archive_notice' ) );
+
+
+
+		add_action( 'edit_form_before_permalink', array( $this, 'before_permalink' ) );
+		add_action( 'edit_form_after_title', array( $this, 'after_title' ) );
 	}
+
+	public function before_permalink( $post ) {
+		global $post, $thepostid, $product_object;
+
+		$thepostid      = $post->ID;
+		$product_object = $thepostid ? wc_get_product( $thepostid ) : new WC_Product;
+		?>
+		<div class="woocommerce-edit-product-fields">
+			<div class="woocommerce-edit-product-images-wrapper">
+				<div id="product_images_container">
+					<ul class="product_images">
+						<?php
+							$product_image_gallery = get_post_meta( $post->ID, '_product_image_gallery', true );
+							$attachments           = wp_parse_id_list( array_merge( array( get_post_thumbnail_id() ), explode( ',', $product_image_gallery ) ) );
+							$update_meta           = false;
+							$updated_gallery_ids   = array();
+
+							if ( ! empty( $attachments ) ) {
+								foreach ( $attachments as $attachment_id ) {
+									$attachment = wp_get_attachment_image( $attachment_id, 'thumbnail' );
+
+									// if attachment is empty skip
+									if ( empty( $attachment ) ) {
+										$update_meta = true;
+										continue;
+									}
+
+									echo '<li class="image" data-attachment_id="' . esc_attr( $attachment_id ) . '">
+										' . $attachment . '
+										<ul class="actions">
+											<li><a href="#" class="delete tips" data-tip="' . esc_attr__( 'Delete image', 'woocommerce' ) . '">' . __( 'Delete', 'woocommerce' ) . '</a></li>
+										</ul>
+									</li>';
+
+									// rebuild ids to be saved
+									$updated_gallery_ids[] = $attachment_id;
+								}
+
+								// need to update product meta to set new gallery ids
+								if ( $update_meta ) {
+									update_post_meta( $post->ID, '_product_image_gallery', implode( ',', $updated_gallery_ids ) );
+								}
+							}
+						?>
+						<li class="add_product_images hide-if-no-js">
+							<a href="#" data-choose="<?php esc_attr_e( 'Add images to product gallery', 'woocommerce' ); ?>" data-update="<?php esc_attr_e( 'Add to gallery', 'woocommerce' ); ?>" data-delete="<?php esc_attr_e( 'Delete image', 'woocommerce' ); ?>" data-text="<?php esc_attr_e( 'Delete', 'woocommerce' ); ?>" title="<?php esc_attr_e( 'Add product gallery images', 'woocommerce' ); ?>"><span class="dashicons dashicons-plus-alt"></span></a>
+						</li>
+					</ul>
+					<input type="hidden" id="product_image_gallery" name="product_image_gallery" value="<?php echo esc_attr( $product_image_gallery ); ?>" />
+				</div>
+			</div><!--/woocommerce-edit-product-images-wrapper-->
+			<div class="woocommerce-edit-product-fields-wrapper">
+				<input type="text" name="title" placeholder="<?php esc_attr_e( 'Product name' ); ?>" class="woocommerce-edit-product-field woocommerce-edit-product-field__title" value="<?php echo esc_attr( $post->post_title ); ?>" spellcheck="true" autocomplete="off" />
+
+				<label for="product-type">
+					<select id="product-type" name="product-type" class="woocommerce-edit-product-field woocommerce-edit-product-field__type">
+						<optgroup label="<?php esc_attr_e( 'Product Type', 'woocommerce' ); ?>">
+						<?php foreach ( wc_get_product_types() as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php echo selected( $product_object->get_type(), $value, false ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+						</optgroup>
+					</select>
+				</label>
+
+				<input type="text" name="_sku" placeholder="<?php esc_attr_e( 'SKU' ); ?>" class="woocommerce-edit-product-field woocommerce-edit-product-field__sku" value="<?php echo esc_attr( $product_object->get_sku( 'edit' ) ); ?>" />
+
+				<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__regular_price">
+					<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_regular_price" placeholder="<?php esc_attr_e( 'Regular Price' ); ?>" value="<?php echo esc_attr( $product_object->get_regular_price( 'edit' ) ); ?>" />
+				</div>
+				<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__sale_price">
+					<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_sale_price" placeholder="<?php esc_attr_e( 'Sale Price (optional)' ); ?>" value="<?php echo esc_attr( $product_object->get_sale_price( 'edit' ) ); ?>" />
+				</div>
+				<?php
+
+				$settings = array(
+					'textarea_name' => 'excerpt',
+					'quicktags'     => array( 'buttons' => 'em,strong,link,ul,ol,li,close' ),
+					'editor_height' => '129',
+					'editor_class'  => 'woocommerce-edit-product-field woocommerce-edit-product-field__short_description',
+					'media_buttons' => false,
+				);
+
+				add_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
+				add_filter( 'user_can_richedit', '__return_false' );
+				wp_editor( htmlspecialchars_decode( $post->post_excerpt ), 'excerpt', apply_filters( 'woocommerce_product_short_description_editor_settings', $settings ) );
+				remove_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
+				remove_filter( 'user_can_richedit', '__return_false' );
+				?>
+				<div class="woocommerce-edit-product-field__permalink">
+		<?php
+	}
+
+	function excerpt_add_placeholder( $html ){
+		$html = str_replace( '<textarea', '<textarea placeholder="' . esc_attr__( 'Short description', 'woocommerce' ) . '" ', $html );
+		return $html;
+	}
+
+	public function after_title( $post ) {
+		?>
+				</div><!--/woocommerce-edit-product-fields-wrapper-->
+			</div><!--/woocommerce-edit-product-fields-wrapper-->
+		</div><!--/woocommerce-edit-product-fields-->
+		<?php
+	}
+
+
+
+
 
 	/**
 	 * Adjust shop order columns for the user on certain conditions.

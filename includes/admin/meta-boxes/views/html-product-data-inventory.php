@@ -2,7 +2,7 @@
 
 	<div class="options_group">
 		<?php
-			if ( wc_product_sku_enabled() ) {
+		/*	if ( wc_product_sku_enabled() ) {
 				woocommerce_wp_text_input( array(
 					'id'          => '_sku',
 					'value'       => $product_object->get_sku( 'edit' ),
@@ -10,7 +10,7 @@
 					'desc_tip'    => true,
 					'description' => __( 'SKU refers to a Stock-keeping unit, a unique identifier for each distinct product and service that can be purchased.', 'woocommerce' ),
 				) );
-			}
+			}*/
 
 			do_action( 'woocommerce_product_options_sku' );
 
