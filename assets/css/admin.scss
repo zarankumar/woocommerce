@@ -151,6 +151,29 @@
 				}
 			}
 		}
+		.woocommerce-edit-product-images-wrapper,
+		.woocommerce-edit-product-field-wrapper {
+			label {
+				font-weight: bold;
+				margin-bottom: .5em !important;
+				display: block;
+				color: #666;
+			}
+		}
+		.woocommerce-edit-product-field-wrapper {
+			clear:both;
+			&.woocommerce-edit-product-field-wrapper--first {
+				width: calc( 50% - 3px );
+				float: left;
+				margin-right: 3px;
+				clear: none;
+			}
+			&.woocommerce-edit-product-field-wrapper--last {
+				width: 50%;
+				float: right;
+				clear: none;
+			}
+		}
 		.woocommerce-edit-product-field {
 			padding: 3px 8px;
 			font-size: 1.7em;
@@ -170,17 +193,6 @@
 		textarea.woocommerce-edit-product-field::-webkit-input-placeholder {
 			padding-top: 3px;
 			line-height: 1.5em;
-		}
-		.woocommerce-edit-product-field__title {
-		}
-		.woocommerce-edit-product-field__type {
-			width: calc( 50% - 3px );
-			float: left;
-			margin-right: 3px;
-		}
-		.woocommerce-edit-product-field__sku {
-			width: 50%;
-			float: right;
 		}
 		.wp-editor-wrap {
 			margin: 0 0 20px;
@@ -219,16 +231,9 @@
 			}
 		}
 		.woocommerce-edit-product-field__regular_price {
-			width: calc( 50% - 3px );
-			margin-right: 3px;
-			float: left;
 			&.has-sale-price input {
 				text-decoration: line-through;
 			}
-		}
-		.woocommerce-edit-product-field__sale_price {
-			width: 50%;
-			float: right;
 		}
 		#edit-slug-box {
 			padding: 0;

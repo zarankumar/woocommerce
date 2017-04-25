@@ -119,6 +119,7 @@ class WC_Admin_Post_Types {
 		?>
 		<div class="woocommerce-edit-product-fields">
 			<div class="woocommerce-edit-product-images-wrapper">
+				<label><?php esc_attr_e( 'Product images' ); ?></label>
 				<div id="product_images_container">
 					<ul class="product_images">
 						<?php
@@ -162,9 +163,12 @@ class WC_Admin_Post_Types {
 				</div>
 			</div><!--/woocommerce-edit-product-images-wrapper-->
 			<div class="woocommerce-edit-product-fields-wrapper">
-				<input type="text" name="title" placeholder="<?php esc_attr_e( 'Product name' ); ?>" class="woocommerce-edit-product-field woocommerce-edit-product-field__title" value="<?php echo esc_attr( $post->post_title ); ?>" spellcheck="true" autocomplete="off" />
-
-				<label for="product-type">
+				<div class="woocommerce-edit-product-field-wrapper">
+					<label><?php esc_attr_e( 'Product name' ); ?></label>
+					<input type="text" name="title" class="woocommerce-edit-product-field woocommerce-edit-product-field__title" value="<?php echo esc_attr( $post->post_title ); ?>" spellcheck="true" autocomplete="off" />
+				</div>
+				<div class="woocommerce-edit-product-field-wrapper woocommerce-edit-product-field-wrapper--first">
+					<label for="product-type"><?php esc_attr_e( 'Product type' ); ?></label>
 					<select id="product-type" name="product-type" class="woocommerce-edit-product-field woocommerce-edit-product-field__type">
 						<optgroup label="<?php esc_attr_e( 'Product Type', 'woocommerce' ); ?>">
 						<?php foreach ( wc_get_product_types() as $value => $label ) : ?>
@@ -172,38 +176,47 @@ class WC_Admin_Post_Types {
 						<?php endforeach; ?>
 						</optgroup>
 					</select>
-				</label>
-
-				<input type="text" name="_sku" placeholder="<?php esc_attr_e( 'SKU' ); ?>" class="woocommerce-edit-product-field woocommerce-edit-product-field__sku" value="<?php echo esc_attr( $product_object->get_sku( 'edit' ) ); ?>" />
-
-				<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__regular_price">
-					<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_regular_price" placeholder="<?php esc_attr_e( 'Regular Price' ); ?>" value="<?php echo esc_attr( $product_object->get_regular_price( 'edit' ) ); ?>" />
 				</div>
-				<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__sale_price">
-					<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_sale_price" placeholder="<?php esc_attr_e( 'Sale Price (optional)' ); ?>" value="<?php echo esc_attr( $product_object->get_sale_price( 'edit' ) ); ?>" />
+				<div class="woocommerce-edit-product-field-wrapper woocommerce-edit-product-field-wrapper--last">
+					<label for="product-type"><?php esc_attr_e( 'SKU' ); ?></label>
+					<input type="text" name="_sku" class="woocommerce-edit-product-field woocommerce-edit-product-field__sku" value="<?php echo esc_attr( $product_object->get_sku( 'edit' ) ); ?>" />
 				</div>
-				<?php
+				<div class="woocommerce-edit-product-field-wrapper woocommerce-edit-product-field-wrapper--first">
+					<label for="product-type"><?php esc_attr_e( 'Regular price' ); ?></label>
+					<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__regular_price">
+						<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_regular_price" placeholder="<?php echo esc_attr( wc_format_decimal( '0.00' ) ); ?>" value="<?php echo esc_attr( $product_object->get_regular_price( 'edit' ) ); ?>" />
+					</div>
+				</div>
+				<div class="woocommerce-edit-product-field-wrapper woocommerce-edit-product-field-wrapper--last">
+					<label for="product-type"><?php esc_attr_e( 'Sale price' ); ?></label>
+					<div class="woocommerce-edit-product-field woocommerce-edit-product-field__price woocommerce-edit-product-field__sale_price">
+						<span><?php echo esc_html( get_woocommerce_currency_symbol() ); ?></span><input type="text" name="_sale_price" placeholder="&ndash;" value="<?php echo esc_attr( $product_object->get_sale_price( 'edit' ) ); ?>" />
+					</div>
+				</div>
+				<div class="woocommerce-edit-product-field-wrapper">
+					<label for="product-type"><?php esc_attr_e( 'Short description' ); ?></label>
+					<?php
+						$settings = array(
+							'textarea_name' => 'excerpt',
+							'quicktags'     => array( 'buttons' => 'em,strong,link,ul,ol,li,close' ),
+							'editor_height' => '129',
+							'editor_class'  => 'woocommerce-edit-product-field woocommerce-edit-product-field__short_description',
+							'media_buttons' => false,
+						);
 
-				$settings = array(
-					'textarea_name' => 'excerpt',
-					'quicktags'     => array( 'buttons' => 'em,strong,link,ul,ol,li,close' ),
-					'editor_height' => '129',
-					'editor_class'  => 'woocommerce-edit-product-field woocommerce-edit-product-field__short_description',
-					'media_buttons' => false,
-				);
-
-				add_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
-				add_filter( 'user_can_richedit', '__return_false' );
-				wp_editor( htmlspecialchars_decode( $post->post_excerpt ), 'excerpt', apply_filters( 'woocommerce_product_short_description_editor_settings', $settings ) );
-				remove_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
-				remove_filter( 'user_can_richedit', '__return_false' );
-				?>
+						add_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
+						add_filter( 'user_can_richedit', '__return_false' );
+						wp_editor( htmlspecialchars_decode( $post->post_excerpt ), 'excerpt', apply_filters( 'woocommerce_product_short_description_editor_settings', $settings ) );
+						remove_filter( 'the_editor', array( $this, 'excerpt_add_placeholder' ) );
+						remove_filter( 'user_can_richedit', '__return_false' );
+					?>
+				</div>
 				<div class="woocommerce-edit-product-field__permalink">
 		<?php
 	}
 
 	function excerpt_add_placeholder( $html ){
-		$html = str_replace( '<textarea', '<textarea placeholder="' . esc_attr__( 'Short description', 'woocommerce' ) . '" ', $html );
+		$html = str_replace( '<textarea', '<textarea placeholder="' . esc_attr__( 'Provide a short description of this product for your customers.', 'woocommerce' ) . '" ', $html );
 		return $html;
 	}
 
