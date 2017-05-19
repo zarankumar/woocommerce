@@ -301,6 +301,7 @@ class WC_Product_CSV_Importer_Controller {
 		wp_localize_script( 'wc-product-import', 'wc_product_import_params', array(
 			'import_nonce' => wp_create_nonce( 'wc-product-import' ),
 			'mapping'      => $mapping,
+			'update'       => ( !empty( $_POST['update'] ) ) ? true : false,
 			'file'         => $this->file,
 		) );
 		wp_enqueue_script( 'wc-product-import' );

@@ -36,6 +36,7 @@ class WC_Product_CSV_Importer extends WC_Product_Importer {
 			'lines'     => -1,      // Max lines to read.
 			'mapping'   => array(), // Column mapping. csv_heading => schema_heading.
 			'parse'     => false,   // Whether to sanitize and format data.
+			'update'    => false,   // Whether to update existing products.
 			'delimiter' => ',',     // CSV delimiter.
 		);
 
@@ -275,5 +276,9 @@ class WC_Product_CSV_Importer extends WC_Product_Importer {
 		}
 
 		return $data;
+	}
+
+	public function process_item( $data ) {
+
 	}
 }

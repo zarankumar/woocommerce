@@ -47,6 +47,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tbody>
 	</table>
 	<div class="wc-actions">
+		<input type="hidden" name="update" value="0" />
+		<label><input type="checkbox" name="update" value="1" /><?php esc_html_e( 'Update existing products with matching IDs or SKUs', 'woocommerce' ); ?></label>
 		<input type="submit" class="button button-primary button-next" value="<?php esc_attr_e( 'Run the importer', 'woocommerce' ); ?>" name="save_step" />
 		<input type="hidden" name="file" value="<?php echo esc_attr( $this->file ); ?>" />
 		<input type="hidden" name="delimiter" value="<?php echo esc_attr( $this->delimiter ); ?>" />

@@ -8,6 +8,7 @@
 		this.$form    = $form;
 		this.xhr      = false;
 		this.mapping  = wc_product_import_params.mapping;
+		this.update   = wc_product_import_params.update;
 		this.position = 0;
 		this.file     = wc_product_import_params.file;
 		this.security = wc_product_import_params.import_nonce;
@@ -38,6 +39,7 @@
 				action   : 'woocommerce_do_ajax_product_import',
 				position : $this.position,
 				mapping  : $this.mapping,
+				update   : $this.update,
 				file     : $this.file,
 				security : $this.security
 			},
