@@ -62,8 +62,8 @@ class WC_Product_CSV_Importer extends WC_Product_Importer {
 			while ( false !== ( $row = fgetcsv( $handle, 0, $this->params['delimiter'] ) ) ) {
 				$this->raw_data[] = $row;
 
-	            if ( ( $this->params['end_pos'] > 0 && ftell( $handle ) >= $this->params['end_pos'] ) || 0 === --$this->params['lines'] ) {
-	            	break;
+				if ( ( $this->params['end_pos'] > 0 && ftell( $handle ) >= $this->params['end_pos'] ) || 0 === --$this->params['lines'] ) {
+					break;
 				}
 			}
 
@@ -223,11 +223,16 @@ class WC_Product_CSV_Importer extends WC_Product_Importer {
 			'/Download * URL/'         => 'esc_url',
 		);
 
-		$headers         = ! empty( $this->mapped_keys ) ? $this->mapped_keys : $this->raw_keys;
-		$parse_functions = array();
+		$parse_functions   = array();
+		$this->parsed_data = array();
+
+		// If we have no mapped data, abort.
+		if ( empty( $this->mapped_keys ) ) {
+			return;
+		}
 
 		// Figure out the parse function for each column.
-		foreach ( $headers as $index => $heading ) {
+		foreach ( $this->mapped_keys as $index => $heading ) {
 
 			$parse_function = 'esc_attr';
 			if ( isset( $data_formatting[ $heading ] ) ) {
@@ -248,7 +253,7 @@ class WC_Product_CSV_Importer extends WC_Product_Importer {
 		foreach ( $this->raw_data as $row ) {
 			$item = array();
 			foreach ( $row as $index => $field ) {
-				$item[ $headers[ $index ] ] = call_user_func( $parse_functions[ $index ], $field );
+				$item[ $this->mapped_keys[ $index ] ] = call_user_func( $parse_functions[ $index ], $field );
 			}
 			$this->parsed_data[] = $item;
 		}
