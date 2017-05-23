@@ -478,12 +478,12 @@ class WC_REST_Authentication {
 	private function get_method() {
 		$method = '';
 
-		if ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
-			$method = $_SERVER['REQUEST_METHOD'];
-		} elseif ( isset( $_GET['_method'] ) ) {
+		if ( isset( $_GET['_method'] ) ) {
 			$method = strtoupper( $_GET['_method'] );
 		} elseif ( isset( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ) ) {
 			$method = strtoupper( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] );
+		} elseif ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
+			$method = $_SERVER['REQUEST_METHOD'];
 		}
 
 		return $method;
