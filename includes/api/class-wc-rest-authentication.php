@@ -475,7 +475,7 @@ class WC_REST_Authentication {
 	 *
 	 * @return string
 	 */
-	private function get_method() {
+	private function get_request_method() {
 		$method = '';
 
 		if ( isset( $_GET['_method'] ) ) {
@@ -499,11 +499,7 @@ class WC_REST_Authentication {
 		global $wc_rest_authentication_error;
 
 		$valid  = true;
-		$method = $this->get_method();
-
-		if ( empty( $method ) ) {
-			return false;
-		}
+		$method = $this->get_request_method();
 
 		switch ( $method ) {
 			case 'HEAD' :
