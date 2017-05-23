@@ -471,6 +471,25 @@ class WC_REST_Authentication {
 	}
 
 	/**
+	 * Get current request method.
+	 *
+	 * @return string
+	 */
+	private function get_method() {
+		$method = '';
+
+		if ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
+			$method = $_SERVER['REQUEST_METHOD'];
+		} elseif ( isset( $_GET['_method'] ) ) {
+			$method = strtoupper( $_GET['_method'] );
+		} elseif ( isset( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ) ) {
+			$method = strtoupper( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] );
+		}
+
+		return $method;
+	}
+
+	/**
 	 * Check that the API keys provided have the proper key-specific permissions to either read or write API resources.
 	 *
 	 * @param string $permissions
@@ -479,14 +498,14 @@ class WC_REST_Authentication {
 	private function check_permissions( $permissions ) {
 		global $wc_rest_authentication_error;
 
-		$valid = true;
+		$valid  = true;
+		$method = $this->get_method();
 
-		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) ) {
+		if ( empty( $method ) ) {
 			return false;
 		}
 
-		switch ( $_SERVER['REQUEST_METHOD'] ) {
-
+		switch ( $method ) {
 			case 'HEAD' :
 			case 'GET' :
 				if ( 'read' !== $permissions && 'read_write' !== $permissions ) {
@@ -494,7 +513,6 @@ class WC_REST_Authentication {
 					$valid = false;
 				}
 				break;
-
 			case 'POST' :
 			case 'PUT' :
 			case 'PATCH' :
@@ -504,6 +522,10 @@ class WC_REST_Authentication {
 					$valid = false;
 				}
 				break;
+
+			default :
+				$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Unknown request method.', 'woocommerce' ), array( 'status' => 401 ) );
+				$valid = false;
 		}
 
 		return $valid;
