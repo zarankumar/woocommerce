@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WC_REST_Authentication {
 
 	/**
+	 * Authentication errors.
+	 *
+	 * @var WP_Error
+	 */
+	protected $errors = null;
+
+	/**
 	 * Initialize authentication actions.
 	 */
 	public function __construct() {
@@ -70,14 +77,12 @@ class WC_REST_Authentication {
 	 * @return WP_Error|null|bool
 	 */
 	public function check_authentication_error( $error ) {
-		global $wc_rest_authentication_error;
-
 		// Passthrough other errors.
 		if ( ! empty( $error ) ) {
 			return $error;
 		}
 
-		return $wc_rest_authentication_error;
+		return $this->errors;
 	}
 
 	/**
@@ -91,8 +96,6 @@ class WC_REST_Authentication {
 	 * @return int|bool
 	 */
 	private function perform_basic_authentication() {
-		global $wc_rest_authentication_error;
-
 		$consumer_key    = '';
 		$consumer_secret = '';
 
@@ -121,10 +124,12 @@ class WC_REST_Authentication {
 
 		// Validate user secret.
 		if ( ! hash_equals( $user->consumer_secret, $consumer_secret ) ) {
-			$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer secret is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
+			$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer secret is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
 
 			return false;
 		}
+
+		$this->user_permissions = $user->permissions;
 
 		// Check API Key permissions.
 		if ( ! $this->check_permissions( $user->permissions ) ) {
@@ -203,8 +208,6 @@ class WC_REST_Authentication {
 	 * @return array|WP_Error
 	 */
 	public function get_oauth_parameters() {
-		global $wc_rest_authentication_error;
-
 		$params = array_merge( $_GET, $_POST );
 		$params = wp_unslash( $params );
 		$header = $this->get_authorization_header();
@@ -252,7 +255,7 @@ class WC_REST_Authentication {
 				implode( ', ', $errors )
 			);
 
-			$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_missing_parameter', $message, array( 'status' => 401 ) );
+			$this->errors = new WP_Error( 'woocommerce_rest_authentication_missing_parameter', $message, array( 'status' => 401 ) );
 
 			return array();
 		}
@@ -277,8 +280,6 @@ class WC_REST_Authentication {
 	 * @return int|bool
 	 */
 	private function perform_oauth_authentication() {
-		global $wc_rest_authentication_error;
-
 		$params = $this->get_oauth_parameters();
 		if ( empty( $params ) ) {
 			return false;
@@ -288,19 +289,19 @@ class WC_REST_Authentication {
 		$user = $this->get_user_data_by_consumer_key( $params['oauth_consumer_key'] );
 
 		if ( empty( $user ) ) {
-			$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer key is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
+			$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer key is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
 
 			return false;
 		}
 
 		// Perform OAuth validation.
-		$wc_rest_authentication_error = $this->check_oauth_signature( $user, $params );
-		if ( is_wp_error( $wc_rest_authentication_error ) ) {
+		$this->errors = $this->check_oauth_signature( $user, $params );
+		if ( is_wp_error( $this->errors ) ) {
 			return false;
 		}
 
-		$wc_rest_authentication_error = $this->check_oauth_timestamp_and_nonce( $user, $params['oauth_timestamp'], $params['oauth_nonce'] );
-		if ( is_wp_error( $wc_rest_authentication_error ) ) {
+		$this->errors = $this->check_oauth_timestamp_and_nonce( $user, $params['oauth_timestamp'], $params['oauth_nonce'] );
+		if ( is_wp_error( $this->errors ) ) {
 			return false;
 		}
 
@@ -496,8 +497,6 @@ class WC_REST_Authentication {
 	 * @return bool
 	 */
 	private function check_permissions( $permissions ) {
-		global $wc_rest_authentication_error;
-
 		$valid  = true;
 		$method = $this->get_request_method();
 
@@ -505,7 +504,7 @@ class WC_REST_Authentication {
 			case 'HEAD' :
 			case 'GET' :
 				if ( 'read' !== $permissions && 'read_write' !== $permissions ) {
-					$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have read permissions.', 'woocommerce' ), array( 'status' => 401 ) );
+					$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have read permissions.', 'woocommerce' ), array( 'status' => 401 ) );
 					$valid = false;
 				}
 				break;
@@ -514,13 +513,13 @@ class WC_REST_Authentication {
 			case 'PATCH' :
 			case 'DELETE' :
 				if ( 'write' !== $permissions && 'read_write' !== $permissions ) {
-					$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have write permissions.', 'woocommerce' ), array( 'status' => 401 ) );
+					$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have write permissions.', 'woocommerce' ), array( 'status' => 401 ) );
 					$valid = false;
 				}
 				break;
 
 			default :
-				$wc_rest_authentication_error = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Unknown request method.', 'woocommerce' ), array( 'status' => 401 ) );
+				$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Unknown request method.', 'woocommerce' ), array( 'status' => 401 ) );
 				$valid = false;
 		}
 
