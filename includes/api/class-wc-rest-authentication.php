@@ -24,9 +24,16 @@ class WC_REST_Authentication {
 	/**
 	 * Logged in user data.
 	 *
-	 * @var object
+	 * @var stdClass
 	 */
 	protected $user = null;
+
+	/**
+	 * Current auth method.
+	 *
+	 * @var string
+	 */
+	protected $auth_method = '';
 
 	/**
 	 * Initialize authentication actions.
@@ -104,8 +111,9 @@ class WC_REST_Authentication {
 	 * @return int|bool
 	 */
 	private function perform_basic_authentication() {
-		$consumer_key    = '';
-		$consumer_secret = '';
+		$this->auth_method = 'basic_auth';
+		$consumer_key      = '';
+		$consumer_secret   = '';
 
 		// If the $_GET parameters are present, use those first.
 		if ( ! empty( $_GET['consumer_key'] ) && ! empty( $_GET['consumer_secret'] ) ) {
@@ -278,6 +286,8 @@ class WC_REST_Authentication {
 	 * @return int|bool
 	 */
 	private function perform_oauth_authentication() {
+		$this->auth_method = 'oauth1';
+
 		$params = $this->get_oauth_parameters();
 		if ( empty( $params ) ) {
 			return false;
@@ -517,9 +527,7 @@ class WC_REST_Authentication {
 	 * @return WP_REST_Response
 	 */
 	public function send_unauthorized_headers( $response ) {
-		global $wc_rest_authentication_error;
-
-		if ( is_wp_error( $wc_rest_authentication_error ) && is_ssl() ) {
+		if ( is_wp_error( $this->errors ) && 'basic_auth' === $this->auth_method ) {
 			$auth_message = __( 'WooCommerce API. Use a consumer key in the username field and a consumer secret in the password field.', 'woocommerce' );
 			$response->header( 'WWW-Authenticate', 'Basic realm="' . $auth_message . '"', true );
 		}
