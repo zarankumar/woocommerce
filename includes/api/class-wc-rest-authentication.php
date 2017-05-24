@@ -22,12 +22,20 @@ class WC_REST_Authentication {
 	protected $errors = null;
 
 	/**
+	 * Logged in user data.
+	 *
+	 * @var object
+	 */
+	protected $user = null;
+
+	/**
 	 * Initialize authentication actions.
 	 */
 	public function __construct() {
 		add_filter( 'determine_current_user', array( $this, 'authenticate' ), 15 );
 		add_filter( 'rest_authentication_errors', array( $this, 'check_authentication_error' ) );
 		add_filter( 'rest_post_dispatch', array( $this, 'send_unauthorized_headers' ), 50 );
+		add_filter( 'rest_pre_dispatch', array( $this, 'check_user_permissions' ), 10, 3 );
 	}
 
 	/**
@@ -117,29 +125,19 @@ class WC_REST_Authentication {
 		}
 
 		// Get user data.
-		$user = $this->get_user_data_by_consumer_key( $consumer_key );
-		if ( empty( $user ) ) {
+		$this->user = $this->get_user_data_by_consumer_key( $consumer_key );
+		if ( empty( $this->user ) ) {
 			return false;
 		}
 
 		// Validate user secret.
-		if ( ! hash_equals( $user->consumer_secret, $consumer_secret ) ) {
+		if ( ! hash_equals( $this->user->consumer_secret, $consumer_secret ) ) {
 			$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer secret is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
 
 			return false;
 		}
 
-		$this->user_permissions = $user->permissions;
-
-		// Check API Key permissions.
-		if ( ! $this->check_permissions( $user->permissions ) ) {
-			return false;
-		}
-
-		// Update last access.
-		$this->update_last_access( $user->key_id );
-
-		return $user->user_id;
+		return $this->user->user_id;
 	}
 
 	/**
@@ -286,34 +284,26 @@ class WC_REST_Authentication {
 		}
 
 		// Fetch WP user by consumer key.
-		$user = $this->get_user_data_by_consumer_key( $params['oauth_consumer_key'] );
+		$this->user = $this->get_user_data_by_consumer_key( $params['oauth_consumer_key'] );
 
-		if ( empty( $user ) ) {
+		if ( empty( $this->user ) ) {
 			$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Consumer key is invalid.', 'woocommerce' ), array( 'status' => 401 ) );
 
 			return false;
 		}
 
 		// Perform OAuth validation.
-		$this->errors = $this->check_oauth_signature( $user, $params );
+		$this->errors = $this->check_oauth_signature( $this->user, $params );
 		if ( is_wp_error( $this->errors ) ) {
 			return false;
 		}
 
-		$this->errors = $this->check_oauth_timestamp_and_nonce( $user, $params['oauth_timestamp'], $params['oauth_nonce'] );
+		$this->errors = $this->check_oauth_timestamp_and_nonce( $this->user, $params['oauth_timestamp'], $params['oauth_nonce'] );
 		if ( is_wp_error( $this->errors ) ) {
 			return false;
 		}
 
-		// Check API Key permissions.
-		if ( ! $this->check_permissions( $user->permissions ) ) {
-			return false;
-		}
-
-		// Update last access.
-		$this->update_last_access( $user->key_id );
-
-		return $user->user_id;
+		return $this->user->user_id;
 	}
 
 	/**
@@ -472,40 +462,19 @@ class WC_REST_Authentication {
 	}
 
 	/**
-	 * Get current request method.
-	 *
-	 * @return string
-	 */
-	private function get_request_method() {
-		$method = '';
-
-		if ( isset( $_GET['_method'] ) ) {
-			$method = strtoupper( $_GET['_method'] );
-		} elseif ( isset( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ) ) {
-			$method = strtoupper( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] );
-		} elseif ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
-			$method = $_SERVER['REQUEST_METHOD'];
-		}
-
-		return $method;
-	}
-
-	/**
 	 * Check that the API keys provided have the proper key-specific permissions to either read or write API resources.
 	 *
-	 * @param string $permissions
-	 * @return bool
+	 * @param string $method Request method.
+	 * @return bool|WP_Error
 	 */
-	private function check_permissions( $permissions ) {
-		$valid  = true;
-		$method = $this->get_request_method();
+	private function check_permissions( $method ) {
+		$permissions = $this->user->permissions;
 
 		switch ( $method ) {
 			case 'HEAD' :
 			case 'GET' :
 				if ( 'read' !== $permissions && 'read_write' !== $permissions ) {
-					$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have read permissions.', 'woocommerce' ), array( 'status' => 401 ) );
-					$valid = false;
+					return new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have read permissions.', 'woocommerce' ), array( 'status' => 401 ) );
 				}
 				break;
 			case 'POST' :
@@ -513,31 +482,27 @@ class WC_REST_Authentication {
 			case 'PATCH' :
 			case 'DELETE' :
 				if ( 'write' !== $permissions && 'read_write' !== $permissions ) {
-					$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have write permissions.', 'woocommerce' ), array( 'status' => 401 ) );
-					$valid = false;
+					return new WP_Error( 'woocommerce_rest_authentication_error', __( 'The API key provided does not have write permissions.', 'woocommerce' ), array( 'status' => 401 ) );
 				}
 				break;
 
 			default :
-				$this->errors = new WP_Error( 'woocommerce_rest_authentication_error', __( 'Unknown request method.', 'woocommerce' ), array( 'status' => 401 ) );
-				$valid = false;
+				return new WP_Error( 'woocommerce_rest_authentication_error', __( 'Unknown request method.', 'woocommerce' ), array( 'status' => 401 ) );
 		}
 
-		return $valid;
+		return true;
 	}
 
 	/**
 	 * Updated API Key last access datetime.
-	 *
-	 * @param int $key_id
 	 */
-	private function update_last_access( $key_id ) {
+	private function update_last_access() {
 		global $wpdb;
 
 		$wpdb->update(
 			$wpdb->prefix . 'woocommerce_api_keys',
 			array( 'last_access' => current_time( 'mysql' ) ),
-			array( 'key_id' => $key_id ),
+			array( 'key_id' => $this->user->key_id ),
 			array( '%s' ),
 			array( '%d' )
 		);
@@ -560,6 +525,29 @@ class WC_REST_Authentication {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Check for user permissions and register last access.
+	 *
+	 * @param mixed           $result  Response to replace the requested version with.
+	 * @param WP_REST_Server  $server  Server instance.
+	 * @param WP_REST_Request $request Request used to generate the response.
+	 * @return mixed
+	 */
+	public function check_user_permissions( $result, $server, $request ) {
+		if ( $this->user ) {
+			// Check API Key permissions.
+			$allowed = $this->check_permissions( $request->get_method() );
+			if ( is_wp_error( $allowed ) ) {
+				return $allowed;
+			}
+
+			// Register last access.
+			$this->update_last_access();
+		}
+
+		return $result;
 	}
 }
 
